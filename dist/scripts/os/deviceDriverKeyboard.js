@@ -50,7 +50,7 @@ var TSOS;
                     chr = String.fromCharCode(17);
                     _KernelInputQueue.enqueue(chr);
                 } else {
-                    var str = _BuffStack.pop();
+                    //var str = _BuffStack.pop();
                     //putText(str);
                 }
             } else if ((keyCode >= 48) && (keyCode <= 57)) {

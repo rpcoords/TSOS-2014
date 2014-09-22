@@ -109,7 +109,7 @@ module TSOS {
         }
 
         public putPrompt() {
-            _StdOut.putText(this.promptStr);
+			_StdOut.putText(this.promptStr);
         }
 
         public handleInput(buffer) {

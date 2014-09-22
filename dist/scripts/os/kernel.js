@@ -27,9 +27,7 @@ var TSOS;
 
             // Initialize standard input and output to the _Console.
             _StdIn = _Console;
-            this.krnTrace("Enabling the interrupts.");
             _StdOut = _Console;
-            this.krnTrace("Enabling the interrupts.");
 
             // Load the Keyboard Device Driver
             this.krnTrace("Loading the keyboard device driver.");

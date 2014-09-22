@@ -51,7 +51,7 @@ module TSOS {
                     // ... tell the shell ...
                     _OsShell.handleInput(this.buffer);
                     // ... and reset our buffer.
-					_BuffStack.push(this.buffer);
+					//_BuffStack.push(this.buffer);
                     this.buffer = "";
                 } else if (chr === String.fromCharCode(8)) { // Backspace Key
 					this.buffer = this.buffer.substring(0, this.buffer.length - 1);
@@ -61,8 +61,8 @@ module TSOS {
 					var taLog = <HTMLInputElement> document.getElementById("taHostLog");
 					taLog.value = this.buffer;
 				} else if ((chr === String.fromCharCode(17))) {
-					var str = _BuffStack.pop();
-					this.putText(str); 
+				/*	var str = _BuffStack.pop();
+					this.putText(str); */
 				} else {
                     // This is a "normal" character, so ...
                     // ... draw it on the screen...
