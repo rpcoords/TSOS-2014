@@ -58,8 +58,8 @@ module TSOS {
 
             // Note the REAL clock in milliseconds since January 1, 1970.
             var now: number = new Date().getTime();
-
-            // Build the log string.
+			
+			// Build the log string.
             var str: string = "({ clock:" + clock + ", source:" + source + ", msg:" + msg + ", now:" + now  + " })"  + "\n";
 
             // Update the log console.
@@ -67,6 +67,18 @@ module TSOS {
             taLog.value = str + taLog.value;
             // Optionally update a log database or some streaming service.
         }
+		
+		public static hostTaskBar(): void {
+			// Display Status
+			var status = _Status;
+			
+			// Retrieve Date and Time
+			var d = Date();
+			
+			// Update Task Bar
+			var taTaskBar = <HTMLInputElement> document.getElementById("taTaskBar");
+			taTaskBar.value = "Status: " + status + "\n" + d;
+		}
 
 
         //

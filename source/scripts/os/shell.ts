@@ -74,6 +74,30 @@ module TSOS {
                                   "prompt",
                                   "<string> - Sets the prompt.");
             this.commandList[this.commandList.length] = sc;
+			
+			// whereami
+			sc = new ShellCommand(this.shellWhereami, 
+								  "whereami", 
+								  "- Tells you where you are.");
+			this.commandList[this.commandList.length] = sc;
+			
+			// rese
+			sc = new ShellCommand(this.shellRese,
+								  "rese", 
+								  "- S.O.S. gives its opinion of a Resident Evil game whose title includes a number between 0 and 6.");
+			this.commandList[this.commandList.length] = sc;
+			
+			// date
+			sc = new ShellCommand(this.shellDate, 
+								  "date", 
+								  "- Displays the current date and time.");
+			this.commandList[this.commandList.length] = sc;
+			
+			// status <string>
+			sc = new ShellCommand(this.shellStatus, 
+								  "status", 
+								  "<string> - Allows user to specify status messages.");
+			this.commandList[this.commandList.length] = sc;
 
             // processes - list the running processes and their IDs
             // kill <id> - kills the specified process id.
@@ -81,6 +105,7 @@ module TSOS {
             //
             // Display the initial prompt.
             this.putPrompt();
+			Control.hostLog("shell launched", "shell");
         }
 
         public putPrompt() {
@@ -201,6 +226,10 @@ module TSOS {
         public shellVer(args) {
             _StdOut.putText(APP_NAME + " version " + APP_VERSION);
         }
+		
+		public shellWhereami() {
+			_StdOut.putText("I don't know. Why are you asking me?");
+		}
 
         public shellHelp(args) {
             _StdOut.putText("Commands:");
@@ -278,6 +307,24 @@ module TSOS {
                 _StdOut.putText("Usage: prompt <string>  Please supply a string.");
             }
         }
+		
+		public shellRese(args) {
+			if (args < 5) {
+				_StdOut.putText("It's a classic game. You should play it.");
+			} else if (args < 6) {
+				_StdOut.putText("It's alright, but not as good as the originals.");
+			} else {
+				_StdOut.putText("Avoid like the plague!");
+			}
+		}
+		
+		public shellDate() {
+			_StdOut.putText(Date());
+		}
+		
+		public shellStatus(args) {
+			_Status = args;
+		}
 
     }
 }

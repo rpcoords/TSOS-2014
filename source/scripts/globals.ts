@@ -7,13 +7,13 @@
    This code references page numbers in the text book:
    Operating System Concepts 8th edition by Silberschatz, Galvin, and Gagne.  ISBN 978-0-470-12872-5
    ------------ */
-
+  
 //
 // Global "CONSTANTS" (There is currently no const or final or readonly type annotation in TypeScript.)
 // TODO: Make a global object and use that instead of the "_" naming convention in the global namespace.
 //
-var APP_NAME: string    = "TSOS";   // 'cause Bob and I were at a loss for a better name.
-var APP_VERSION: string = "0.07";   // What did you expect?
+var APP_NAME: string    = "S.O.S.";   // 'cause Bob and I were at a loss for a better name.
+var APP_VERSION: string = "6.13";   // What did you expect?
 
 var CPU_CLOCK_INTERVAL: number = 100;   // This is in ms, or milliseconds, so 1000 = 1 second.
 
@@ -53,6 +53,12 @@ var _StdOut = null;
 // UI
 var _Console: TSOS.Console;
 var _OsShell: TSOS.Shell;
+
+// Status
+var _Status: string = "running";
+
+// Buffer Stack
+var _BuffStack = new TSOS.Stack();
 
 // At least this OS is not trying to kill you. (Yet.)
 var _SarcasticMode: boolean = false;

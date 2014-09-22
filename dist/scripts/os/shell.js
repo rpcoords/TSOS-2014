@@ -53,11 +53,28 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellPrompt, "prompt", "<string> - Sets the prompt.");
             this.commandList[this.commandList.length] = sc;
 
+            // whereami
+            sc = new TSOS.ShellCommand(this.shellWhereami, "whereami", "- Tells you where you are.");
+            this.commandList[this.commandList.length] = sc;
+
+            // rese
+            sc = new TSOS.ShellCommand(this.shellRese, "rese", "- S.O.S. gives its opinion of a Resident Evil game whose title includes a number between 0 and 6.");
+            this.commandList[this.commandList.length] = sc;
+
+            // date
+            sc = new TSOS.ShellCommand(this.shellDate, "date", "- Displays the current date and time.");
+            this.commandList[this.commandList.length] = sc;
+
+            // status <string>
+            sc = new TSOS.ShellCommand(this.shellStatus, "status", "<string> - Allows user to specify status messages.");
+            this.commandList[this.commandList.length] = sc;
+
             // processes - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             //
             // Display the initial prompt.
             this.putPrompt();
+            TSOS.Control.hostLog("shell launched", "shell");
         };
 
         Shell.prototype.putPrompt = function () {
@@ -186,6 +203,10 @@ var TSOS;
             _StdOut.putText(APP_NAME + " version " + APP_VERSION);
         };
 
+        Shell.prototype.shellWhereami = function () {
+            _StdOut.putText("I don't know. Why are you asking me?");
+        };
+
         Shell.prototype.shellHelp = function (args) {
             _StdOut.putText("Commands:");
             for (var i in _OsShell.commandList) {
@@ -262,6 +283,24 @@ var TSOS;
             } else {
                 _StdOut.putText("Usage: prompt <string>  Please supply a string.");
             }
+        };
+
+        Shell.prototype.shellRese = function (args) {
+            if (args < 5) {
+                _StdOut.putText("It's a classic game. You should play it.");
+            } else if (args < 6) {
+                _StdOut.putText("It's alright, but not as good as the originals.");
+            } else {
+                _StdOut.putText("Avoid like the plague!");
+            }
+        };
+
+        Shell.prototype.shellDate = function () {
+            _StdOut.putText(Date());
+        };
+
+        Shell.prototype.shellStatus = function (args) {
+            _Status = args;
         };
         return Shell;
     })();

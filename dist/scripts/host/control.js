@@ -64,6 +64,18 @@ var TSOS;
             // Optionally update a log database or some streaming service.
         };
 
+        Control.hostTaskBar = function () {
+            // Display Status
+            var status = _Status;
+
+            // Retrieve Date and Time
+            var d = Date();
+
+            // Update Task Bar
+            var taTaskBar = document.getElementById("taTaskBar");
+            taTaskBar.value = "Status: " + status + "\n" + d;
+        };
+
         //
         // Host Events
         //

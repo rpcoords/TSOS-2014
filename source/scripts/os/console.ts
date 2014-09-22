@@ -17,7 +17,7 @@ module TSOS {
                     public currentFontSize = _DefaultFontSize,
                     public currentXPosition = 0,
                     public currentYPosition = _DefaultFontSize,
-                    public buffer = "") {
+                    public buffer = "") { 
 
         }
 
@@ -27,6 +27,12 @@ module TSOS {
         }
 
         private clearScreen(): void {
+			// Get a global reference to the canvas.  TODO: Move this stuff into a Display Device Driver, maybe?
+            _Canvas = <HTMLCanvasElement>document.getElementById('display');
+
+            // Get a global reference to the drawing context.
+            _DrawingContext = _Canvas.getContext('2d');
+			
             _DrawingContext.clearRect(0, 0, _Canvas.width, _Canvas.height);
         }
 
@@ -40,13 +46,24 @@ module TSOS {
                 // Get the next character from the kernel input queue.
                 var chr = _KernelInputQueue.dequeue();
                 // Check to see if it's "special" (enter or ctrl-c) or "normal" (anything else that the keyboard device driver gave us).
-                if (chr === String.fromCharCode(13)) { //     Enter key
-                    // The enter key marks the end of a console command, so ...
+                if ((chr === String.fromCharCode(13)) || (chr === String.fromCharCode(9))) { //     Enter key or Tab
+                    // The enter key or tab marks the end of a console command, so ...
                     // ... tell the shell ...
                     _OsShell.handleInput(this.buffer);
                     // ... and reset our buffer.
+					_BuffStack.push(this.buffer);
                     this.buffer = "";
-                } else {
+                } else if (chr === String.fromCharCode(8)) { // Backspace Key
+					this.buffer = this.buffer.substring(0, this.buffer.length - 1);
+					this.buffer = this.buffer + "  ";
+					this.currentXPosition = 0;
+					this.putText(this.buffer);
+					var taLog = <HTMLInputElement> document.getElementById("taHostLog");
+					taLog.value = this.buffer;
+				} else if ((chr === String.fromCharCode(17))) {
+					var str = _BuffStack.pop();
+					this.putText(str); 
+				} else {
                     // This is a "normal" character, so ...
                     // ... draw it on the screen...
                     this.putText(chr);
@@ -65,11 +82,16 @@ module TSOS {
             // decided to write one function and use the term "text" to connote string or char.
             // UPDATE: Even though we are now working in TypeScript, char and string remain undistinguished.
             if (text !== "") {
+				var x = this.currentXPosition
+				if (this.currentXPosition > 500) {
+					this.advanceLine();
+					x = 0;
+				}
                 // Draw the text at the current X and Y coordinates.
-                _DrawingContext.drawText(this.currentFont, this.currentFontSize, this.currentXPosition, this.currentYPosition, text);
+                _DrawingContext.drawText(this.currentFont, this.currentFontSize, x, this.currentYPosition, text);
                 // Move the current X position.
                 var offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, text);
-                this.currentXPosition = this.currentXPosition + offset;
+                this.currentXPosition = x + offset;
             }
          }
 
@@ -85,6 +107,14 @@ module TSOS {
                                      _FontHeightMargin;
 
             // TODO: Handle scrolling. (Project 1)
+			/*
+			if (this.currentYPosition > 500) {
+				var c = document.getElementById('display');
+				
+				//c.translate(0,100);
+				c.save();
+			}
+			*/
         }
     }
  }

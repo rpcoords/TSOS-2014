@@ -20,7 +20,7 @@ module TSOS {
 
             // Initialize our global queues.
             _KernelInterruptQueue = new Queue();  // A (currently) non-priority queue for interrupt requests (IRQs).
-            _KernelBuffers = new Array();         // Buffers... for the kernel.
+			_KernelBuffers = new Array();         // Buffers... for the kernel.
             _KernelInputQueue = new Queue();      // Where device input lands before being processed out somewhere.
             _Console = new Console();          // The command line interface / console I/O device.
 
@@ -29,7 +29,9 @@ module TSOS {
 
             // Initialize standard input and output to the _Console.
             _StdIn  = _Console;
+			this.krnTrace("Enabling the interrupts.");
             _StdOut = _Console;
+			this.krnTrace("Enabling the interrupts.");
 
             // Load the Keyboard Device Driver
             this.krnTrace("Loading the keyboard device driver.");
@@ -160,6 +162,7 @@ module TSOS {
                         // Check the CPU_CLOCK_INTERVAL in globals.ts for an
                         // idea of the tick rate and adjust this line accordingly.
                         Control.hostLog(msg, "OS");
+						Control.hostTaskBar();
                     }
                 } else {
                     Control.hostLog(msg, "OS");
