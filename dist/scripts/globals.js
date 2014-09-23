@@ -61,6 +61,9 @@ var _StringStack = null;
 // Scrolling Queue
 var _ScrollQueue = null;
 
+// Stops kernel if crash
+var _Crash = false;
+
 // At least this OS is not trying to kill you. (Yet.)
 var _SarcasticMode = false;
 

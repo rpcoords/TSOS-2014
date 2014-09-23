@@ -69,6 +69,10 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellStatus, "status", "<string> - Allows user to specify status messages.");
             this.commandList[this.commandList.length] = sc;
 
+            // bsod
+            sc = new TSOS.ShellCommand(this.shellBsod, "bsod", "- Crashes S.O.S.");
+            this.commandList[this.commandList.length] = sc;
+
             // processes - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             //
@@ -301,6 +305,10 @@ var TSOS;
 
         Shell.prototype.shellStatus = function (args) {
             _Status = args;
+        };
+
+        Shell.prototype.shellBsod = function (args) {
+            _Kernel.krnTrapError("controlled crash");
         };
         return Shell;
     })();

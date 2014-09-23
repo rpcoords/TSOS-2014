@@ -98,6 +98,12 @@ module TSOS {
 								  "status", 
 								  "<string> - Allows user to specify status messages.");
 			this.commandList[this.commandList.length] = sc;
+			
+			// bsod
+			sc = new ShellCommand(this.shellBsod, 
+								  "bsod", 
+								  "- Crashes S.O.S.");
+			this.commandList[this.commandList.length] = sc;
 
             // processes - list the running processes and their IDs
             // kill <id> - kills the specified process id.
@@ -324,6 +330,10 @@ module TSOS {
 		
 		public shellStatus(args) {
 			_Status = args;
+		}
+		
+		public shellBsod(args) {
+			_Kernel.krnTrapError("controlled crash");
 		}
 
     }

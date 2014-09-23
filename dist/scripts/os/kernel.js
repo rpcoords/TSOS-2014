@@ -73,6 +73,8 @@ var TSOS;
             // More?
             //
             this.krnTrace("end shutdown OS");
+            while (1 < 2) {
+            }
         };
 
         Kernel.prototype.krnOnCPUClockPulse = function () {
@@ -89,7 +91,9 @@ var TSOS;
             } else if (_CPU.isExecuting) {
                 _CPU.cycle();
             } else {
-                this.krnTrace("Idle");
+                if (_Crash === false) {
+                    this.krnTrace("Idle");
+                }
             }
         };
 
@@ -167,8 +171,15 @@ var TSOS;
 
         Kernel.prototype.krnTrapError = function (msg) {
             TSOS.Control.hostLog("OS ERROR - TRAP: " + msg);
+            _Crash = true;
 
             // TODO: Display error on console, perhaps in some sort of colored screen. (Perhaps blue?)
+            _OsShell.shellCls(msg);
+            _DrawingContext.fillStyle = "rgb(0,0,200)";
+            _DrawingContext.fillRect(0, 0, _Canvas.width, _Canvas.height);
+            _Console.putText("SYSTEM CRASH");
+            _Console.advanceLine();
+            _Console.putText("Please restart.");
             this.krnShutdown();
         };
         return Kernel;
