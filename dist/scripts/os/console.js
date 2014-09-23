@@ -32,7 +32,8 @@ var TSOS;
             // Get a global reference to the drawing context.
             _DrawingContext = _Canvas.getContext('2d');
 
-            _DrawingContext.clearRect(0, 0, _Canvas.width, _Canvas.height);
+            _DrawingContext.fillStyle = "rgb(200,200,200)";
+            _DrawingContext.fillRect(0, 0, _Canvas.width, _Canvas.height);
         };
 
         Console.prototype.resetXY = function () {
@@ -52,18 +53,18 @@ var TSOS;
                     _OsShell.handleInput(this.buffer);
 
                     // ... and reset our buffer.
-                    //_BuffStack.push(this.buffer);
+                    _BuffStack.enqueue(this.buffer);
                     this.buffer = "";
                 } else if (chr === String.fromCharCode(8)) {
-                    this.buffer = this.buffer.substring(0, this.buffer.length - 1);
-                    this.buffer = this.buffer + "  ";
+                    var removed = _StringStack.pop();
+                    this.buffer = _StringStack.pop();
+                    _StringStack.enqueue(this.buffer);
+                    var x = this.currentXPosition;
+                    _DrawingContext.fillRect(0, this.currentYPosition - 10, _Canvas.width, 100);
                     this.currentXPosition = 0;
+                    _OsShell.putPrompt();
+                    this.currentXPosition = 12.48;
                     this.putText(this.buffer);
-                    var taLog = document.getElementById("taHostLog");
-                    taLog.value = this.buffer;
-                } else if ((chr === String.fromCharCode(17))) {
-                    /*	var str = _BuffStack.pop();
-                    this.putText(str); */
                 } else {
                     // This is a "normal" character, so ...
                     // ... draw it on the screen...
@@ -71,6 +72,7 @@ var TSOS;
 
                     // ... and add it to our buffer.
                     this.buffer += chr;
+                    _StringStack.enqueue(this.buffer);
                 }
                 // TODO: Write a case for Ctrl-C.
             }
@@ -83,6 +85,7 @@ var TSOS;
             // do the same thing, thereby encouraging confusion and decreasing readability, I
             // decided to write one function and use the term "text" to connote string or char.
             // UPDATE: Even though we are now working in TypeScript, char and string remain undistinguished.
+            //this.putText(this.currentXPosition);
             if (text !== "") {
                 var x = this.currentXPosition;
                 if (this.currentXPosition > 500) {

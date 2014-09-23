@@ -47,11 +47,15 @@ var TSOS;
                 _KernelInputQueue.enqueue(chr);
             } else if ((keyCode == 38) || (keyCode == 40)) {
                 if (keyCode == 38) {
-                    chr = String.fromCharCode(17);
-                    _KernelInputQueue.enqueue(chr);
+                    var str = _BuffStack.pop();
+                    _Console.currentXPosition = 12.48;
+                    _Console.buffer = str;
+                    _Console.putText(str);
                 } else {
-                    //var str = _BuffStack.pop();
-                    //putText(str);
+                    var str = _InverseStack.pop();
+                    _Console.currentXPosition = 12.48;
+                    _Console.buffer = str;
+                    _Console.putText(str);
                 }
             } else if ((keyCode >= 48) && (keyCode <= 57)) {
                 // Check if shifted for special characters
@@ -129,6 +133,13 @@ var TSOS;
                 // Check if shifted
                 if (isShifted) {
                     keyCode = 95;
+                }
+                chr = String.fromCharCode(keyCode);
+                _KernelInputQueue.enqueue(chr);
+            } else if (keyCode == 59) {
+                // Check if shifted
+                if (isShifted) {
+                    keyCode = 58;
                 }
                 chr = String.fromCharCode(keyCode);
                 _KernelInputQueue.enqueue(chr);

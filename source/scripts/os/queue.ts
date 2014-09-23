@@ -33,6 +33,14 @@ module TSOS {
             }
             return retVal;
         }
+		
+		public pop() {
+            var retVal = null;
+            if (this.q.length > 0) {
+                retVal = this.q.pop();
+            }
+            return retVal;
+        }
 
         public toString() {
             var retVal = "";

@@ -57,8 +57,10 @@ var _OsShell: TSOS.Shell;
 // Status
 var _Status: string = "running";
 
-// Buffer Stack
-//var _BuffStack = new TSOS.Queue();
+// Stacks
+var _BuffStack = null;
+var _InverseStack = null;
+var _StringStack = null;
 
 // At least this OS is not trying to kill you. (Yet.)
 var _SarcasticMode: boolean = false;

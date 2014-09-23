@@ -1,3 +1,5 @@
+///<reference path="stack.ts" />
+
 /* ------------
      Kernel.ts
 
@@ -26,6 +28,11 @@ module TSOS {
 
             // Initialize the console.
             _Console.init();
+			
+			// Initialize _BuffStack and Inverse Queue
+			_BuffStack = new Queue();
+			_InverseStack = new Queue();
+			_StringStack = new Queue();
 
             // Initialize standard input and output to the _Console.
             _StdIn  = _Console;

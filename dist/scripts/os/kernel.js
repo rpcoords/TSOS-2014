@@ -1,3 +1,4 @@
+///<reference path="stack.ts" />
 /* ------------
 Kernel.ts
 Requires globals.ts
@@ -24,6 +25,11 @@ var TSOS;
 
             // Initialize the console.
             _Console.init();
+
+            // Initialize _BuffStack and Inverse Queue
+            _BuffStack = new TSOS.Queue();
+            _InverseStack = new TSOS.Queue();
+            _StringStack = new TSOS.Queue();
 
             // Initialize standard input and output to the _Console.
             _StdIn = _Console;

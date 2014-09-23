@@ -32,6 +32,14 @@ var TSOS;
             return retVal;
         };
 
+        Queue.prototype.pop = function () {
+            var retVal = null;
+            if (this.q.length > 0) {
+                retVal = this.q.pop();
+            }
+            return retVal;
+        };
+
         Queue.prototype.toString = function () {
             var retVal = "";
             for (var i in this.q) {
