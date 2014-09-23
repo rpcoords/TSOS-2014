@@ -47,13 +47,21 @@ var TSOS;
                 _KernelInputQueue.enqueue(chr);
             } else if ((keyCode == 38) || (keyCode == 40)) {
                 if (keyCode == 38) {
+                    _DrawingContext.fillRect(0, _Console.currentYPosition - 10, _Canvas.width, 100); // Clears line
                     var str = _BuffStack.pop();
+                    _Console.currentXPosition = 0;
+                    _OsShell.putPrompt();
                     _Console.currentXPosition = 12.48;
+                    _InverseStack.enqueue(str);
                     _Console.buffer = str;
                     _Console.putText(str);
                 } else {
+                    _DrawingContext.fillRect(0, _Console.currentYPosition - 10, _Canvas.width, 100); // Clears line
                     var str = _InverseStack.pop();
+                    _Console.currentXPosition = 0;
+                    _OsShell.putPrompt();
                     _Console.currentXPosition = 12.48;
+                    _BuffStack.enqueue(str);
                     _Console.buffer = str;
                     _Console.putText(str);
                 }

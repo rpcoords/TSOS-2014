@@ -62,6 +62,9 @@ var _BuffStack = null;
 var _InverseStack = null;
 var _StringStack = null;
 
+// Scrolling Queue
+var _ScrollQueue = null;
+
 // At least this OS is not trying to kill you. (Yet.)
 var _SarcasticMode: boolean = false;
 

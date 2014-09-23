@@ -29,10 +29,11 @@ module TSOS {
             // Initialize the console.
             _Console.init();
 			
-			// Initialize _BuffStack and Inverse Queue
+			// Initialize stacks and _ScrollQueue
 			_BuffStack = new Queue();
 			_InverseStack = new Queue();
 			_StringStack = new Queue();
+			_ScrollQueue = new Queue();
 
             // Initialize standard input and output to the _Console.
             _StdIn  = _Console;

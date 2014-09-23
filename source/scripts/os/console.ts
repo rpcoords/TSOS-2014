@@ -53,13 +53,14 @@ module TSOS {
                     _OsShell.handleInput(this.buffer);
                     // ... and reset our buffer.
 					_BuffStack.enqueue(this.buffer);
+					_ScrollQueue.enqueue(this.buffer);
                     this.buffer = "";
                 } else if (chr === String.fromCharCode(8)) { // Backspace Key
 					var removed = _StringStack.pop();
 					this.buffer = _StringStack.pop();
 					_StringStack.enqueue(this.buffer);
 					var x = this.currentXPosition
-					_DrawingContext.fillRect(0, this.currentYPosition - 10, _Canvas.width, 100);
+					_DrawingContext.fillRect(0, this.currentYPosition - 10, _Canvas.width, 100); // Clears line
 					this.currentXPosition = 0;
 					_OsShell.putPrompt();
 					this.currentXPosition = 12.48;

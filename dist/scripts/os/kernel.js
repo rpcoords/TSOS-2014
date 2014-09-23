@@ -26,10 +26,11 @@ var TSOS;
             // Initialize the console.
             _Console.init();
 
-            // Initialize _BuffStack and Inverse Queue
+            // Initialize stacks and _ScrollQueue
             _BuffStack = new TSOS.Queue();
             _InverseStack = new TSOS.Queue();
             _StringStack = new TSOS.Queue();
+            _ScrollQueue = new TSOS.Queue();
 
             // Initialize standard input and output to the _Console.
             _StdIn = _Console;
