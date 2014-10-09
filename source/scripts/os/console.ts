@@ -47,8 +47,8 @@ module TSOS {
                 // Get the next character from the kernel input queue.
                 var chr = _KernelInputQueue.dequeue();
                 // Check to see if it's "special" (enter or ctrl-c) or "normal" (anything else that the keyboard device driver gave us).
-                if ((chr === String.fromCharCode(13)) || (chr === String.fromCharCode(9))) { //     Enter key or Tab
-                    // The enter key or tab marks the end of a console command, so ...
+                if (chr === String.fromCharCode(13)) { //     Enter key
+                    // The enter key marks the end of a console command, so ...
                     // ... tell the shell ...
                     _OsShell.handleInput(this.buffer);
                     // ... and reset our buffer.
@@ -56,7 +56,24 @@ module TSOS {
 					_ScrollQueue.enqueue(this.buffer);
 					_StringStack = new Queue();
                     this.buffer = "";
-                } else if (chr === String.fromCharCode(8)) { // Backspace Key
+                } else if (chr === String.fromCharCode(9)) { // Tab Key
+					for (var a = 1; a <= _OsShell.commandList.length; a++) {
+						if (_OsShell.commandList[a].contains(this.buffer)) {
+							// Clears line.
+							var x = this.currentXPosition
+							_DrawingContext.fillRect(0, this.currentYPosition - 15, _Canvas.width, 100); // Clears line
+							this.currentXPosition = 0;
+							_OsShell.putPrompt();
+							this.currentXPosition = 12.48;
+							
+							// Auto-completes command.
+							this.buffer = _OsShell.commandList[a];
+							this.putText(this.buffer);
+						}
+					}
+					var taLog = <HTMLInputElement> document.getElementById("taHostLog");
+					taLog.value = this.buffer;
+				} else if (chr === String.fromCharCode(8)) { // Backspace Key
 					var removed = _StringStack.pop();
 					this.buffer = _StringStack.pop();
 					_StringStack.enqueue(this.buffer);
@@ -112,14 +129,25 @@ module TSOS {
                                      _FontHeightMargin;
 
             // TODO: Handle scrolling. (Project 1)
-			/*
-			if (this.currentYPosition > 500) {
-				var c = document.getElementById('display');
+			
+			if (this.currentYPosition > 497) {
+				//var c = document.getElementById('display');
+				
+				// Copy text, clear screen, and paste text.
+				var text = _DrawingContext.getImageData(0, 20.83, _Canvas.width, _Canvas.height - 20.83);
+				this.clearScreen();
+				_DrawingContext.putImageData(text, 0, 0);
+				
+				// Reset x and y positions.
+				this.currentXPosition = 0;
+				//this.currentYPosition = 479.17;
+				this.currentYPosition = 480;
+				//_OsShell.putPrompt();
 				
 				//c.translate(0,100);
-				c.save();
+				//c.save();
 			}
-			*/
+			
         }
     }
  }

@@ -6,7 +6,7 @@ This code references page numbers in the text book:
 Operating System Concepts 8th edition by Silberschatz, Galvin, and Gagne.  ISBN 978-0-470-12872-5
 ------------ */
 //
-// Global "CONSTANTS" (There is currently no const or final or readonly type annotation in TypeScript.)
+// Global "CONSTANTS" (There is currently no const or final or readonly type annotation in TypeScraipt.)
 // TODO: Make a global object and use that instead of the "_" naming convention in the global namespace.
 //
 var APP_NAME = "S.O.S.";

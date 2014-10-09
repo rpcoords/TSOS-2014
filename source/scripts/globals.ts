@@ -9,7 +9,7 @@
    ------------ */
   
 //
-// Global "CONSTANTS" (There is currently no const or final or readonly type annotation in TypeScript.)
+// Global "CONSTANTS" (There is currently no const or final or readonly type annotation in TypeScraipt.)
 // TODO: Make a global object and use that instead of the "_" naming convention in the global namespace.
 //
 var APP_NAME: string    = "S.O.S.";   // 'cause Bob and I were at a loss for a better name.
