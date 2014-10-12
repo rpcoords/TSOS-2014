@@ -42,6 +42,54 @@ var _KernelInterruptQueue = null;
 var _KernelBuffers = null;
 var _KernelInputQueue = null;
 
+// Memory Queue
+var _Memory = null;
+
+var memory = new Array(32);
+var memIndex = new Array(32);
+memIndex[0] = "000";
+memIndex[1] = "008";
+memIndex[2] = "010";
+memIndex[3] = "018";
+memIndex[4] = "020";
+memIndex[5] = "028";
+memIndex[6] = "030";
+memIndex[7] = "038";
+memIndex[8] = "040";
+memIndex[9] = "048";
+memIndex[10] = "050";
+memIndex[11] = "058";
+memIndex[12] = "060";
+memIndex[13] = "068";
+memIndex[14] = "070";
+memIndex[15] = "078";
+memIndex[16] = "080";
+memIndex[17] = "088";
+memIndex[18] = "090";
+memIndex[19] = "098";
+memIndex[20] = "0A0";
+memIndex[21] = "0A8";
+memIndex[22] = "0B0";
+memIndex[23] = "0B8";
+memIndex[24] = "0C0";
+memIndex[25] = "0C8";
+memIndex[26] = "0D0";
+memIndex[27] = "0D8";
+memIndex[28] = "0E0";
+memIndex[29] = "0E8";
+memIndex[30] = "0F0";
+memIndex[31] = "0F8";
+
+// Process IDs
+var _PIDCounter = 0;
+var _PIDs = null;
+
+var _MemoryPointer = 0;
+var _MemTracker = new Array(3);
+for (var a = 0; a <= 2; a++) {
+    _MemTracker[a] = false;
+}
+
 // Standard input and output
 var _StdIn = null;
 var _StdOut = null;

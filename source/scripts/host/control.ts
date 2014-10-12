@@ -40,6 +40,9 @@ module TSOS {
             // Clear the log text box.
             // Use the TypeScript cast to HTMLInputElement
             (<HTMLInputElement> document.getElementById("taHostLog")).value="";
+			
+			// Display Memory
+			this.initMemory();
 
             // Set focus on the start button.
             // Use the TypeScript cast to HTMLInputElement
@@ -51,6 +54,37 @@ module TSOS {
                 _GLaDOS.init();
             }
         }
+		
+		public static initMemory(): void {
+			for (var a = 0; a <= 31; a++) {
+				memory[a] = new Array(8);
+			}
+			
+			var taMemory = <HTMLInputElement> document.getElementById("taMemory")
+			for (var a = 0; a <= 31; a++) {
+				taMemory.value = taMemory.value + "0x" + memIndex[a] + " | ";
+				for (var b = 0; b <= 7; b++) {
+					memory[a][b] = "00";
+					taMemory.value = taMemory.value + memory[a][b] + " ";
+				}
+				taMemory.value = taMemory.value + "\n";
+			}
+		}
+		
+		public static fillMemory(): void {
+			var taMemory = <HTMLInputElement> document.getElementById("taMemory")
+			// Clear taMemory
+			taMemory.value = "";
+			
+			// Fill taMemory
+			for (var a = 0; a <= 31; a++) {
+				taMemory.value = taMemory.value + "0x" + memIndex[a] + " | ";
+				for (var b = 0; b <= 7; b++) {
+					taMemory.value = taMemory.value + memory[a][b] + " ";
+				}
+				taMemory.value = taMemory.value + "\n";
+			}
+		}
 
         public static hostLog(msg: string, source: string = "?"): void {
             // Note the OS CLOCK.
@@ -79,7 +113,25 @@ module TSOS {
 			var taTaskBar = <HTMLInputElement> document.getElementById("taTaskBar");
 			taTaskBar.value = "Status: " + status + "\n" + d;
 		}
-
+		
+		public static extractCode(): string {
+			var taProgramInput = <HTMLInputElement> document.getElementById("taProgramInput");
+			var code = taProgramInput.value;
+			
+			return code;
+		}
+		
+		public static fillMemoryCell(instruction, row, cell) {
+			// Create id
+			var r = row + 1;
+			var c = cell + 1;
+			var id = "row" + r + "cell" + c;
+			
+			// Writes new value to cell
+			//document.getElementsByTagName('table')[0].getElementsByTagName('td')[cell] = instruction;
+			//var memCell = <HTMLInputElement> document.getElementById(id);
+			//memCell.value = instruction;
+		}
 
         //
         // Host Events

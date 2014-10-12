@@ -36,6 +36,9 @@ var TSOS;
             // Use the TypeScript cast to HTMLInputElement
             document.getElementById("taHostLog").value = "";
 
+            // Display Memory
+            this.initMemory();
+
             // Set focus on the start button.
             // Use the TypeScript cast to HTMLInputElement
             document.getElementById("btnStartOS").focus();
@@ -44,6 +47,37 @@ var TSOS;
             if (typeof Glados === "function") {
                 _GLaDOS = new Glados();
                 _GLaDOS.init();
+            }
+        };
+
+        Control.initMemory = function () {
+            for (var a = 0; a <= 31; a++) {
+                memory[a] = new Array(8);
+            }
+
+            var taMemory = document.getElementById("taMemory");
+            for (var a = 0; a <= 31; a++) {
+                taMemory.value = taMemory.value + "0x" + memIndex[a] + " | ";
+                for (var b = 0; b <= 7; b++) {
+                    memory[a][b] = "00";
+                    taMemory.value = taMemory.value + memory[a][b] + " ";
+                }
+                taMemory.value = taMemory.value + "\n";
+            }
+        };
+
+        Control.fillMemory = function () {
+            var taMemory = document.getElementById("taMemory");
+
+            // Clear taMemory
+            taMemory.value = "";
+
+            for (var a = 0; a <= 31; a++) {
+                taMemory.value = taMemory.value + "0x" + memIndex[a] + " | ";
+                for (var b = 0; b <= 7; b++) {
+                    taMemory.value = taMemory.value + memory[a][b] + " ";
+                }
+                taMemory.value = taMemory.value + "\n";
             }
         };
 
@@ -74,6 +108,24 @@ var TSOS;
             // Update Task Bar
             var taTaskBar = document.getElementById("taTaskBar");
             taTaskBar.value = "Status: " + status + "\n" + d;
+        };
+
+        Control.extractCode = function () {
+            var taProgramInput = document.getElementById("taProgramInput");
+            var code = taProgramInput.value;
+
+            return code;
+        };
+
+        Control.fillMemoryCell = function (instruction, row, cell) {
+            // Create id
+            var r = row + 1;
+            var c = cell + 1;
+            var id = "row" + r + "cell" + c;
+            // Writes new value to cell
+            //document.getElementsByTagName('table')[0].getElementsByTagName('td')[cell] = instruction;
+            //var memCell = <HTMLInputElement> document.getElementById(id);
+            //memCell.value = instruction;
         };
 
         //

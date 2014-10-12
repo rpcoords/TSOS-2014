@@ -73,6 +73,10 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellBsod, "bsod", "- Crashes S.O.S.");
             this.commandList[this.commandList.length] = sc;
 
+            // load
+            sc = new TSOS.ShellCommand(this.shellLoad, "load", "- Loads user code into memory.");
+            this.commandList[this.commandList.length] = sc;
+
             // processes - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             //
@@ -309,6 +313,73 @@ var TSOS;
 
         Shell.prototype.shellBsod = function (args) {
             _Kernel.krnTrapError("controlled crash");
+        };
+
+        Shell.prototype.shellLoad = function () {
+            var code = TSOS.Control.extractCode();
+            var instruction = "";
+            var invalid = false;
+            var currA = 0;
+            var currB = 0;
+
+            if (_MemoryPointer === 1) {
+                currA = 32;
+            } else if (_MemoryPointer === 2) {
+                currA = 64;
+            }
+
+            for (var a = 0; a <= code.length - 1; a++) {
+                var letter = code.charAt(a);
+
+                // Remove spaces and check for valid characters.
+                if (letter === " ") {
+                } else if ((letter === "1") || (letter === "2") || (letter === "3") || (letter === "4") || (letter === "5") || (letter === "6") || (letter === "7") || (letter === "8") || (letter === "9") || (letter === "0") || (letter === "A") || (letter === "B") || (letter === "C") || (letter === "D") || (letter === "E") || (letter === "F")) {
+                    instruction = instruction + letter;
+                } else {
+                    _StdOut.putText("Invalid Character: " + letter);
+                    _StdOut.advanceLine();
+                    _StdOut.putText("Use only hexadecimal characters.");
+                    invalid = true;
+                    break;
+                }
+
+                if (instruction.length === 2) {
+                    // Push instruction into memory queue.
+                    _Memory.enqueue(instruction);
+
+                    // Load instruction into visual memory.
+                    memory[currA][currB] = instruction;
+
+                    currB++;
+                    if (currB === 8) {
+                        currB = 0;
+                        currA++;
+                    }
+
+                    instruction = "";
+                }
+            }
+
+            if (invalid === false) {
+                // Display memory in UI.
+                TSOS.Control.fillMemory();
+
+                // Create PID
+                _PIDs.enqueue(_MemoryPointer);
+
+                _MemTracker[_MemoryPointer] = true;
+                if (_MemTracker[0] === false) {
+                    _MemoryPointer = 0;
+                } else if (_MemTracker[1] === false) {
+                    _MemoryPointer = 1;
+                } else {
+                    _MemoryPointer = 2;
+                }
+
+                // Display PID in shell.
+                _StdOut.putText("PID: " + _PIDCounter);
+                _PIDCounter++; // Increment _PIDCounter for next process.
+            }
         };
         return Shell;
     })();
