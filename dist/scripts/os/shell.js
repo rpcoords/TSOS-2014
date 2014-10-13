@@ -412,10 +412,8 @@ var TSOS;
                 _Process = new TSOS.Process(+args, "0", _CPU, 1, "new");
                 _ProcState = "new";
                 TSOS.Control.displayPCB(args, "0", 1);
-                _StdOut.putText("almost there: " + id[1]);
                 _CPU.executeProgram(id[1], args);
             }
-            _StdOut.putText("\nLeaving function.");
         };
 
         Shell.prototype.executeProgram = function (memDivision, id) {
