@@ -104,16 +104,40 @@ module TSOS {
             // UPDATE: Even though we are now working in TypeScript, char and string remain undistinguished.
             //this.putText(this.currentXPosition);
 			if (text !== "") {
-				var x = this.currentXPosition
-				if (this.currentXPosition > 500) {
+			/*	var x = this.currentXPosition
+				if (this.currentXPosition > 455) {
 					this.advanceLine();
 					x = 0;
+				} */
+				
+				for (var a = 0; a <= text.length - 1; a++) {
+					var letter = text.charAt(a);
+					while ((text.charAt(a + 1) !== " ") && (a !== text.length)) {
+						var letter = letter + text.charAt(a + 1);
+						a++;
+					}
+					
+					// Move the current X position.
+				/*	var offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, letter);
+					this.currentXPosition = this.currentXPosition + offset; */
+					
+					if (this.currentXPosition >= 499) {
+						this.advanceLine();
+						this.currentXPosition = 0;
+					}
+					
+					// Draw the text at the current X and Y coordinates.
+					_DrawingContext.drawText(this.currentFont, this.currentFontSize, this.currentXPosition, this.currentYPosition, letter);
+					// Move the current X position.
+					var offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, letter);
+					this.currentXPosition = this.currentXPosition + offset;
 				}
-                // Draw the text at the current X and Y coordinates.
+
+             /*   // Draw the text at the current X and Y coordinates.
                 _DrawingContext.drawText(this.currentFont, this.currentFontSize, x, this.currentYPosition, text);
                 // Move the current X position.
                 var offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, text);
-                this.currentXPosition = x + offset;
+                this.currentXPosition = x + offset; */
             }
          }
 

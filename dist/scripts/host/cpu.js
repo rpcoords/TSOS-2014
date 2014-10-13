@@ -41,6 +41,64 @@ var TSOS;
             // TODO: Accumulate CPU usage and profiling statistics here.
             // Do the real work here. Be sure to set this.isExecuting appropriately.
         };
+
+        Cpu.prototype.executeProgram = function (memDivision, id) {
+            _StdOut.putText("entered function.");
+            _ProcState = "ready";
+            TSOS.Control.displayPCB(id, "0", 1);
+            var instruction = _Memory[memDivision][0][0];
+            var row = 0;
+            var col = 0;
+            var nextRow = 0;
+            var nextCol = 1;
+            _ProcState = "running";
+            while ((instruction !== "FF") && (_Memory[memDivision][nextRow][nextCol] !== "00")) {
+                // Determine Instruction
+                if (instruction === "A9") {
+                    // Retrieves constant.
+                    col++;
+                    if (col >= 16) {
+                        row++;
+                        col = 0;
+                    }
+                    var con = _Memory[memDivision][row][col];
+
+                    // Put constant in ACC. Updates PC.
+                    _CPU.Acc = con;
+                    _CPU.PC = col + 1;
+                } else if (instruction === "AD") {
+                } else if (instruction === "8D") {
+                } else if (instruction === "6D") {
+                } else if (instruction === "A2") {
+                } else if (instruction === "AE") {
+                } else if (instruction === "A0") {
+                } else if (instruction === "AC") {
+                } else if (instruction === "EA") {
+                } else if (instruction === "00") {
+                } else if (instruction === "EC") {
+                } else if (instruction === "D0") {
+                } else if (instruction === "EE") {
+                } else if (instruction === "FF") {
+                } else {
+                }
+
+                // increment col and row
+                col++;
+                nextCol++;
+                if (col >= 16) {
+                    row++;
+                    col = 0;
+                } else if (nextCol === 16) {
+                    nextRow++;
+                    nextCol = 0;
+                }
+
+                // Updates PCB
+                TSOS.Control.displayPCB(id, instruction, 1);
+
+                instruction = _Memory[memDivision][row][col]; // Next instruction
+            }
+        };
         return Cpu;
     })();
     TSOS.Cpu = Cpu;

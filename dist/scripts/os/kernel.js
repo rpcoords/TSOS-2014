@@ -27,7 +27,13 @@ var TSOS;
             _Console.init();
 
             // Initializes Memory
-            _Memory = new TSOS.Queue();
+            _Memory = new Array(3);
+            for (var a = 0; a <= 2; a++) {
+                _Memory[a] = new Array(16);
+                for (var b = 0; b <= 15; b++) {
+                    _Memory[a][b] = new Array(16);
+                }
+            }
 
             // Initialize stacks and _ScrollQueue
             _BuffStack = new TSOS.Queue();

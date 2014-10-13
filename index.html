@@ -27,6 +27,7 @@
    <script type="text/javascript" src="dist/scripts/os/shellCommand.js"></script>
    <script type="text/javascript" src="dist/scripts/os/userCommand.js"></script>
    <script type="text/javascript" src="dist/scripts/os/kernel.js"></script>
+   <script type="text/javascript" src="dist/scripts/os/process.js"></script>
 
    <!-- Other Routines -->
    <script type="text/javascript" src="dist/scripts/utils.js"></script>
@@ -92,7 +93,7 @@
    </div>
    
    <div style="margin-left:520px;">
-   <div id="divTaskBar">
+   <div id="divTaskBar" style="float:left">
       <label>
          <textarea name="taTaskBar"
                    id  ="taTaskBar"
@@ -101,15 +102,9 @@
          ></textarea>
       </label>
    </div>
-   
-   <div id="divPCB" style="margin-left:420px">
-	  <label>
-		PCB
-	  </label>
-   </div>
-   </div>
 
-   <div id="divLog" style="margin-left:520px;">
+
+   <div id="divLog" style="margin-right:420px; float:left">
       <label>
          Host Log
          <br>
@@ -121,9 +116,21 @@
       </label>
    </div>
    
-   <div id="divUserProgramInput" style="margin-left:520px;">
+   <div id="divPCB" style="float:left;">
+	  <label>
+		Process Control Block
+		<br>
+		<textarea name="taPCB"
+				  id  ="taPCB"
+				  rows="8"
+				  cols="50"
+		></textarea>
+	  </label>
+	</div>
+   
+   <div id="divUserProgramInput" style="margin-right:650px; float:left;">
       <label>
-         User Program Input
+		 User Program Input
          <br>
          <textarea name="taProgramInput"
                    id  ="taProgramInput"
@@ -131,6 +138,7 @@
                    cols="48"
          ></textarea>
       </label>
+   </div>
    </div>
 </div>
 

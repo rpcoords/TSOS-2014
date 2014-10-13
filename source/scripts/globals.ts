@@ -87,6 +87,8 @@ memIndex[31] = "0F8";
 // Process IDs
 var _PIDCounter = 0;
 var _PIDs = null; // Initialized in kernel
+var _Process = null; // Initialized when program is executed
+var _ProcState = "";
 
 var _MemoryPointer = 0;
 var _MemTracker = new Array(3);

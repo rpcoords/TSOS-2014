@@ -77,6 +77,10 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellLoad, "load", "- Loads user code into memory.");
             this.commandList[this.commandList.length] = sc;
 
+            // run <pid>
+            sc = new TSOS.ShellCommand(this.shellRun, "run", "<pid> - Runs program for specified pid.");
+            this.commandList[this.commandList.length] = sc;
+
             // processes - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             //
@@ -321,6 +325,8 @@ var TSOS;
             var invalid = false;
             var currA = 0;
             var currB = 0;
+            var memLocationA = 0;
+            var memLocationB = 0;
 
             if (_MemoryPointer === 1) {
                 currA = 32;
@@ -344,8 +350,13 @@ var TSOS;
                 }
 
                 if (instruction.length === 2) {
-                    // Push instruction into memory queue.
-                    _Memory.enqueue(instruction);
+                    // Push instruction into memory.
+                    _Memory[_MemoryPointer][memLocationA][memLocationB] = instruction;
+                    memLocationB++;
+                    if (memLocationB === 16) {
+                        memLocationA++;
+                        memLocationB = 0;
+                    }
 
                     // Load instruction into visual memory.
                     memory[currA][currB] = instruction;
@@ -365,7 +376,7 @@ var TSOS;
                 TSOS.Control.fillMemory();
 
                 // Create PID
-                _PIDs.enqueue(_MemoryPointer);
+                _PIDs.enqueue([_PIDCounter, _MemoryPointer]);
 
                 _MemTracker[_MemoryPointer] = true;
                 if (_MemTracker[0] === false) {
@@ -378,7 +389,90 @@ var TSOS;
 
                 // Display PID in shell.
                 _StdOut.putText("PID: " + _PIDCounter);
-                _PIDCounter++; // Increment _PIDCounter for next process.
+                _PIDCounter++; // Increment _PIDCounter for next program.
+            }
+        };
+
+        Shell.prototype.shellRun = function (args) {
+            var id = _PIDs.dequeue();
+            var pointer = 0;
+            while (pointer < 3) {
+                if (+args === id[0]) {
+                    break;
+                } else {
+                    _PIDs.enqueue(id);
+                    id = _PIDs.dequeue();
+                    pointer++;
+                }
+            }
+
+            if (pointer === 3) {
+                _StdOut.putText(pointer + "No such PID.");
+            } else {
+                _Process = new TSOS.Process(+args, "0", _CPU, 1, "new");
+                _ProcState = "new";
+                TSOS.Control.displayPCB(args, "0", 1);
+                _StdOut.putText("almost there: " + id[1]);
+                _CPU.executeProgram(id[1], args);
+            }
+            _StdOut.putText("\nLeaving function.");
+        };
+
+        Shell.prototype.executeProgram = function (memDivision, id) {
+            _StdOut.putText("entered function.");
+            _ProcState = "ready";
+            TSOS.Control.displayPCB(id, "0", 1);
+            var instruction = _Memory[memDivision][0][0];
+            var row = 0;
+            var col = 0;
+            var nextRow = 0;
+            var nextCol = 1;
+            _ProcState = "running";
+            while ((instruction !== "FF") && (_Memory[memDivision][nextRow][nextCol] !== "00")) {
+                // Determine Instruction
+                if (instruction === "A9") {
+                    // Retrieves constant.
+                    col++;
+                    if (col >= 16) {
+                        row++;
+                        col = 0;
+                    }
+                    var con = _Memory[memDivision][row][col];
+
+                    // Put constant in ACC. Updates PC.
+                    _CPU.Acc = con;
+                    _CPU.PC = col + 1;
+                } else if (instruction === "AD") {
+                } else if (instruction === "8D") {
+                } else if (instruction === "6D") {
+                } else if (instruction === "A2") {
+                } else if (instruction === "AE") {
+                } else if (instruction === "A0") {
+                } else if (instruction === "AC") {
+                } else if (instruction === "EA") {
+                } else if (instruction === "00") {
+                } else if (instruction === "EC") {
+                } else if (instruction === "D0") {
+                } else if (instruction === "EE") {
+                } else if (instruction === "FF") {
+                } else {
+                }
+
+                // increment col and row
+                col++;
+                nextCol++;
+                if (col >= 16) {
+                    row++;
+                    col = 0;
+                } else if (nextCol === 16) {
+                    nextRow++;
+                    nextCol = 0;
+                }
+
+                // Updates PCB
+                TSOS.Control.displayPCB(id, instruction, 1);
+
+                instruction = _Memory[memDivision][row][col]; // Next instruction
             }
         };
         return Shell;

@@ -39,6 +39,9 @@ var TSOS;
             // Display Memory
             this.initMemory();
 
+            // Display PCB
+            this.initPCB();
+
             // Set focus on the start button.
             // Use the TypeScript cast to HTMLInputElement
             document.getElementById("btnStartOS").focus();
@@ -79,6 +82,26 @@ var TSOS;
                 }
                 taMemory.value = taMemory.value + "\n";
             }
+        };
+
+        Control.initPCB = function () {
+            var taPCB = document.getElementById("taPCB");
+            taPCB.value = "PID: \t\t|" + "\nPC : \t\t|" + "\nIR : \t\t|" + "\nACC: \t\t|" + "\nX  : \t\t|" + "\nY  : \t\t|" + "\nZ  : \t\t|" + "\nPriority: \t|" + "\nState: \t\t|";
+        };
+
+        Control.displayPCB = function (pid, ir, priority) {
+            var taPCB = document.getElementById("taPCB");
+
+            taPCB.value = "";
+            taPCB.value = "PID: \t\t" + pid;
+            taPCB.value = taPCB.value + "\nPC : \t\t" + _CPU.PC;
+            taPCB.value = taPCB.value + "\nIR : \t\t" + ir;
+            taPCB.value = taPCB.value + "\nACC: \t\t" + _CPU.Acc;
+            taPCB.value = taPCB.value + "\nX  : \t\t" + _CPU.Xreg;
+            taPCB.value = taPCB.value + "\nY  : \t\t" + _CPU.Yreg;
+            taPCB.value = taPCB.value + "\nZ  : \t\t" + _CPU.Zflag;
+            taPCB.value = taPCB.value + "\nPriority: \t" + priority;
+            taPCB.value = taPCB.value + "\nState: \t\t" + _ProcState;
         };
 
         Control.hostLog = function (msg, source) {

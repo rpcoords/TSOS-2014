@@ -83,6 +83,8 @@ memIndex[31] = "0F8";
 // Process IDs
 var _PIDCounter = 0;
 var _PIDs = null;
+var _Process = null;
+var _ProcState = "";
 
 var _MemoryPointer = 0;
 var _MemTracker = new Array(3);

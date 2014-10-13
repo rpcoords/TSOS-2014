@@ -110,6 +110,12 @@ module TSOS {
 								  "load",
 								  "- Loads user code into memory.");
 			this.commandList[this.commandList.length] = sc;
+			
+			// run <pid>
+			sc = new ShellCommand(this.shellRun,
+								  "run",
+								  "<pid> - Runs program for specified pid.");
+			this.commandList[this.commandList.length] = sc;
 
             // processes - list the running processes and their IDs
             // kill <id> - kills the specified process id.
@@ -348,6 +354,8 @@ module TSOS {
 			var invalid = false;
 			var currA = 0;
 			var currB = 0;
+			var memLocationA = 0;
+			var memLocationB = 0;
 			
 			if (_MemoryPointer === 1) {
 				currA = 32;
@@ -373,8 +381,13 @@ module TSOS {
 				}
 				
 				if (instruction.length === 2) {
-					// Push instruction into memory queue.
-					_Memory.enqueue(instruction);
+					// Push instruction into memory.
+					_Memory[_MemoryPointer][memLocationA][memLocationB] = instruction;
+					memLocationB++;
+					if (memLocationB === 16) {
+						memLocationA++;
+						memLocationB = 0;
+					}
 					
 					// Load instruction into visual memory.
 					memory[currA][currB] = instruction;
@@ -394,7 +407,7 @@ module TSOS {
 				Control.fillMemory();
 				
 				// Create PID
-				_PIDs.enqueue(_MemoryPointer);
+				_PIDs.enqueue([_PIDCounter, _MemoryPointer]);
 				
 				_MemTracker[_MemoryPointer] = true;
 				if (_MemTracker[0] === false) {
@@ -407,7 +420,104 @@ module TSOS {
 				
 				// Display PID in shell.
 				_StdOut.putText("PID: " + _PIDCounter);
-				_PIDCounter++; // Increment _PIDCounter for next process.
+				_PIDCounter++; // Increment _PIDCounter for next program.
+			}
+		}
+		
+		public shellRun(args) {
+			var id = _PIDs.dequeue();
+			var pointer = 0;
+			while (pointer < 3) {
+				if (+args === id[0]) {
+					break;
+				} else {
+					_PIDs.enqueue(id);
+					id = _PIDs.dequeue();
+					pointer++;
+				}
+			}
+			
+			if (pointer === 3) {
+				_StdOut.putText(pointer + "No such PID.");
+			} else {
+				_Process = new Process(+args, "0", _CPU, 1, "new");
+				_ProcState = "new";
+				Control.displayPCB(args, "0", 1);
+				_StdOut.putText("almost there: " + id[1]);
+				_CPU.executeProgram(id[1], args);
+			}
+			_StdOut.putText("\nLeaving function.");
+		}
+		
+		public executeProgram(memDivision, id): void {
+			_StdOut.putText("entered function.");
+			_ProcState = "ready";
+			Control.displayPCB(id, "0", 1);
+			var instruction = _Memory[memDivision][0][0];
+			var row = 0;
+			var col = 0;
+			var nextRow = 0;
+			var nextCol = 1;
+			_ProcState = "running";
+			while ((instruction !== "FF") && (_Memory[memDivision][nextRow][nextCol] !== "00")) {
+				// Determine Instruction
+				if (instruction === "A9") { // Load ACC with constant
+					// Retrieves constant.
+					col++;
+					if (col >= 16) {
+						row++;
+						col = 0;
+					}
+					var con = _Memory[memDivision][row][col];
+					
+					// Put constant in ACC. Updates PC.
+					_CPU.Acc = con;
+					_CPU.PC = col + 1;
+				} else if (instruction === "AD") { // Load ACC from memory
+				
+				} else if (instruction === "8D") { // Store ACC in memory
+				
+				} else if (instruction === "6D") { // Add with carry
+				
+				} else if (instruction === "A2") { // Load X register with constant
+				
+				} else if (instruction === "AE") { // Load X register from memory
+				
+				} else if (instruction === "A0") { // Load Y register with constant
+				
+				} else if (instruction === "AC") { // Load Y register from memory
+				
+				} else if (instruction === "EA") { // No Operation
+				
+				} else if (instruction === "00") { // Break (not memory address or constant)
+				
+				} else if (instruction === "EC") { // Compare byte in memory to X register
+				
+				} else if (instruction === "D0") { // Branch X bytes if Z = 0
+				
+				} else if (instruction === "EE") { // Increment value of byte
+				
+				} else if (instruction === "FF") { // System call
+				
+				} else { // Memory addresses and constants
+				
+				}
+				
+				// increment col and row
+				col++;
+				nextCol++;
+				if (col >= 16) {
+					row++;
+					col = 0;
+				} else if (nextCol === 16) {
+					nextRow++;
+					nextCol = 0;
+				}
+				
+				// Updates PCB
+				Control.displayPCB(id, instruction, 1);
+				
+				instruction = _Memory[memDivision][row][col]; // Next instruction
 			}
 		}
 
