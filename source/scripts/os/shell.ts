@@ -440,84 +440,18 @@ module TSOS {
 			if (pointer === 3) {
 				_StdOut.putText(pointer + "No such PID.");
 			} else {
-				_Process = new Process(+args, "0", _CPU, 1, "new");
 				_ProcState = "new";
 				Control.displayPCB(args, "0", 1);
+				
+				_ProcState = "ready";
+				Control.displayPCB(id, "0", 1);
+				
+				_CPU.isExecuting = true;
 				_CPU.executeProgram(id[1], args);
+				
+				_MemTracker[id[1]] = false;
+				_MemoryPointer = id[1];
 			}
 		}
-		
-		public executeProgram(memDivision, id): void {
-			_StdOut.putText("entered function.");
-			_ProcState = "ready";
-			Control.displayPCB(id, "0", 1);
-			var instruction = _Memory[memDivision][0][0];
-			var row = 0;
-			var col = 0;
-			var nextRow = 0;
-			var nextCol = 1;
-			_ProcState = "running";
-			while ((instruction !== "FF") && (_Memory[memDivision][nextRow][nextCol] !== "00")) {
-				// Determine Instruction
-				if (instruction === "A9") { // Load ACC with constant
-					// Retrieves constant.
-					col++;
-					if (col >= 16) {
-						row++;
-						col = 0;
-					}
-					var con = _Memory[memDivision][row][col];
-					
-					// Put constant in ACC. Updates PC.
-					_CPU.Acc = con;
-					_CPU.PC = col + 1;
-				} else if (instruction === "AD") { // Load ACC from memory
-				
-				} else if (instruction === "8D") { // Store ACC in memory
-				
-				} else if (instruction === "6D") { // Add with carry
-				
-				} else if (instruction === "A2") { // Load X register with constant
-				
-				} else if (instruction === "AE") { // Load X register from memory
-				
-				} else if (instruction === "A0") { // Load Y register with constant
-				
-				} else if (instruction === "AC") { // Load Y register from memory
-				
-				} else if (instruction === "EA") { // No Operation
-				
-				} else if (instruction === "00") { // Break (not memory address or constant)
-				
-				} else if (instruction === "EC") { // Compare byte in memory to X register
-				
-				} else if (instruction === "D0") { // Branch X bytes if Z = 0
-				
-				} else if (instruction === "EE") { // Increment value of byte
-				
-				} else if (instruction === "FF") { // System call
-				
-				} else { // Memory addresses and constants
-				
-				}
-				
-				// increment col and row
-				col++;
-				nextCol++;
-				if (col >= 16) {
-					row++;
-					col = 0;
-				} else if (nextCol === 16) {
-					nextRow++;
-					nextCol = 0;
-				}
-				
-				// Updates PCB
-				Control.displayPCB(id, instruction, 1);
-				
-				instruction = _Memory[memDivision][row][col]; // Next instruction
-			}
-		}
-
     }
 }

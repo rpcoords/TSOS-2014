@@ -409,68 +409,17 @@ var TSOS;
             if (pointer === 3) {
                 _StdOut.putText(pointer + "No such PID.");
             } else {
-                _Process = new TSOS.Process(+args, "0", _CPU, 1, "new");
                 _ProcState = "new";
                 TSOS.Control.displayPCB(args, "0", 1);
+
+                _ProcState = "ready";
+                TSOS.Control.displayPCB(id, "0", 1);
+
+                _CPU.isExecuting = true;
                 _CPU.executeProgram(id[1], args);
-            }
-        };
 
-        Shell.prototype.executeProgram = function (memDivision, id) {
-            _StdOut.putText("entered function.");
-            _ProcState = "ready";
-            TSOS.Control.displayPCB(id, "0", 1);
-            var instruction = _Memory[memDivision][0][0];
-            var row = 0;
-            var col = 0;
-            var nextRow = 0;
-            var nextCol = 1;
-            _ProcState = "running";
-            while ((instruction !== "FF") && (_Memory[memDivision][nextRow][nextCol] !== "00")) {
-                // Determine Instruction
-                if (instruction === "A9") {
-                    // Retrieves constant.
-                    col++;
-                    if (col >= 16) {
-                        row++;
-                        col = 0;
-                    }
-                    var con = _Memory[memDivision][row][col];
-
-                    // Put constant in ACC. Updates PC.
-                    _CPU.Acc = con;
-                    _CPU.PC = col + 1;
-                } else if (instruction === "AD") {
-                } else if (instruction === "8D") {
-                } else if (instruction === "6D") {
-                } else if (instruction === "A2") {
-                } else if (instruction === "AE") {
-                } else if (instruction === "A0") {
-                } else if (instruction === "AC") {
-                } else if (instruction === "EA") {
-                } else if (instruction === "00") {
-                } else if (instruction === "EC") {
-                } else if (instruction === "D0") {
-                } else if (instruction === "EE") {
-                } else if (instruction === "FF") {
-                } else {
-                }
-
-                // increment col and row
-                col++;
-                nextCol++;
-                if (col >= 16) {
-                    row++;
-                    col = 0;
-                } else if (nextCol === 16) {
-                    nextRow++;
-                    nextCol = 0;
-                }
-
-                // Updates PCB
-                TSOS.Control.displayPCB(id, instruction, 1);
-
-                instruction = _Memory[memDivision][row][col]; // Next instruction
+                _MemTracker[id[1]] = false;
+                _MemoryPointer = id[1];
             }
         };
         return Shell;

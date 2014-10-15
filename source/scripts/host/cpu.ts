@@ -44,8 +44,6 @@ module TSOS {
         }
 		
 		public executeProgram(memDivision, id): void {
-			_ProcState = "ready";
-			Control.displayPCB(id, "0", 1);
 			var instruction = _Memory[memDivision][0][0];
 			var row = 0;
 			var col = 0;
@@ -365,6 +363,9 @@ module TSOS {
 				Control.displayPCB(id, instruction, 1);
 				
 				instruction = _Memory[memDivision][row][col]; // Next instruction
+				
+				// Does not continue executing until next Clock Pulse
+				
 			}
 			
 			// Breaks at "00"
@@ -372,6 +373,7 @@ module TSOS {
 			Control.displayPCB(id, instruction, 1);
 			_ProcState = "terminated";
 			Control.displayPCB(id, instruction, 1);
+			this.isExecuting = false;
 		}
 		
 		// function used by executeProgram() to convert hex digits to decimal

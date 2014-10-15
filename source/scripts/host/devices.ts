@@ -33,6 +33,8 @@ module TSOS {
         public static hostClockPulse(): void {
             // Increment the hardware (host) clock.
             _OSclock++;
+			// Update CPU display.
+			Control.displayCPU();
             // Call the kernel clock pulse event handler.
             _Kernel.krnOnCPUClockPulse();
         }

@@ -42,6 +42,9 @@ var TSOS;
             // Display PCB
             this.initPCB();
 
+            // Display CPU
+            this.initCPU();
+
             // Set focus on the start button.
             // Use the TypeScript cast to HTMLInputElement
             document.getElementById("btnStartOS").focus();
@@ -86,7 +89,7 @@ var TSOS;
 
         Control.initPCB = function () {
             var taPCB = document.getElementById("taPCB");
-            taPCB.value = "PID: \t\t|" + "\nPC : \t\t|" + "\nIR : \t\t|" + "\nACC: \t\t|" + "\nX  : \t\t|" + "\nY  : \t\t|" + "\nZ  : \t\t|" + "\nPriority: \t|" + "\nState: \t\t|";
+            taPCB.value = "PID: \t\t" + "\nPC : \t\t" + "\nIR : \t\t" + "\nACC: \t\t" + "\nX  : \t\t" + "\nY  : \t\t" + "\nZ  : \t\t" + "\nPriority: \t" + "\nState: \t\t";
         };
 
         Control.displayPCB = function (pid, ir, priority) {
@@ -102,6 +105,16 @@ var TSOS;
             taPCB.value = taPCB.value + "\nZ  : \t\t" + _CPU.Zflag;
             taPCB.value = taPCB.value + "\nPriority: \t" + priority;
             taPCB.value = taPCB.value + "\nState: \t\t" + _ProcState;
+        };
+
+        Control.initCPU = function () {
+            var taCPU = document.getElementById("taCPU");
+            taCPU.value = "PC : \t" + "\nACC: \t" + "\nX  : \t" + "\nY  : \t" + "\nZ  : \t";
+        };
+
+        Control.displayCPU = function () {
+            var taCPU = document.getElementById("taCPU");
+            taCPU.value = "PC : \t" + _CPU.PC + "\nACC: \t" + _CPU.Acc + "\nX  : \t" + _CPU.Xreg + "\nY  : \t" + _CPU.Yreg + "\nZ  : \t" + _CPU.Zflag;
         };
 
         Control.hostLog = function (msg, source) {

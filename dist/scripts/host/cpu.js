@@ -43,8 +43,6 @@ var TSOS;
         };
 
         Cpu.prototype.executeProgram = function (memDivision, id) {
-            _ProcState = "ready";
-            TSOS.Control.displayPCB(id, "0", 1);
             var instruction = _Memory[memDivision][0][0];
             var row = 0;
             var col = 0;
@@ -369,6 +367,7 @@ var TSOS;
                 TSOS.Control.displayPCB(id, instruction, 1);
 
                 instruction = _Memory[memDivision][row][col]; // Next instruction
+                // Does not continue executing until next Clock Pulse
             }
 
             // Breaks at "00"
@@ -376,6 +375,7 @@ var TSOS;
             TSOS.Control.displayPCB(id, instruction, 1);
             _ProcState = "terminated";
             TSOS.Control.displayPCB(id, instruction, 1);
+            this.isExecuting = false;
         };
 
         // function used by executeProgram() to convert hex digits to decimal

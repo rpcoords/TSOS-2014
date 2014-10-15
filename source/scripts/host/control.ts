@@ -46,6 +46,9 @@ module TSOS {
 			
 			// Display PCB
 			this.initPCB();
+			
+			// Display CPU
+			this.initCPU();
 
             // Set focus on the start button.
             // Use the TypeScript cast to HTMLInputElement
@@ -91,7 +94,7 @@ module TSOS {
 		
 		public static initPCB(): void {
 			var taPCB = <HTMLInputElement> document.getElementById("taPCB");
-			taPCB.value = "PID: \t\t|" + "\nPC : \t\t|" + "\nIR : \t\t|" + "\nACC: \t\t|" + "\nX  : \t\t|" + "\nY  : \t\t|" + "\nZ  : \t\t|" + "\nPriority: \t|" + "\nState: \t\t|";
+			taPCB.value = "PID: \t\t" + "\nPC : \t\t" + "\nIR : \t\t" + "\nACC: \t\t" + "\nX  : \t\t" + "\nY  : \t\t" + "\nZ  : \t\t" + "\nPriority: \t" + "\nState: \t\t";
 		}
 		
 		public static displayPCB(pid, ir, priority): void {
@@ -107,6 +110,16 @@ module TSOS {
 			taPCB.value = taPCB.value + "\nZ  : \t\t" + _CPU.Zflag;
 			taPCB.value = taPCB.value + "\nPriority: \t" + priority;
 			taPCB.value = taPCB.value + "\nState: \t\t" + _ProcState;
+		}
+		
+		public static initCPU(): void {
+			var taCPU = <HTMLInputElement> document.getElementById("taCPU");
+			taCPU.value = "PC : \t" + "\nACC: \t" + "\nX  : \t" + "\nY  : \t" + "\nZ  : \t";
+		}
+		
+		public static displayCPU(): void {
+			var taCPU = <HTMLInputElement> document.getElementById("taCPU");
+			taCPU.value = "PC : \t" + _CPU.PC + "\nACC: \t" + _CPU.Acc + "\nX  : \t" + _CPU.Xreg + "\nY  : \t" + _CPU.Yreg + "\nZ  : \t" + _CPU.Zflag;
 		}
 
         public static hostLog(msg: string, source: string = "?"): void {
