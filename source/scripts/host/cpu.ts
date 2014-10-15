@@ -145,11 +145,12 @@ module TSOS {
 					
 					// Add a and b.
 					var sum = +a + b;
-					
+										
 					// Convert to hex and store in ACC. Updates PC.
-					var high = this.decToHex(sum / 16);
-					var low = this.decToHex(sum % 16);
-					this.Acc = high + low;
+					var c = +(sum % 16);
+					var r = Math.round(+(sum / 16));
+					
+					this.Acc = this.decToHex(r) + this.decToHex(c);
 					this.PC = col + 1;
 				} else if (instruction === "A2") { // Load X register with constant
 					// Retrieves constant.
@@ -298,7 +299,13 @@ module TSOS {
 					var tempCol = this.hexToDec(addr.charAt(1));
 					
 					// Increments value at address. Updates PC.
-					_Memory[memDivision][tempRow][tempCol]++;
+					var incrementedC = this.hexToDec(_Memory[memDivision][tempRow][tempCol].charAt(1)) + 1;
+					var incrementedR = _Memory[memDivision][tempRow][tempCol].charAt(0);
+					if (incrementedC === 16) {
+						incrementedR++;
+						incrementedC = 0;
+					}
+					_Memory[memDivision][tempRow][tempCol] = this.decToHex(incrementedR) + this.decToHex(incrementedC);
 					var value = _Memory[memDivision][tempRow][tempCol];
 					this.PC = col + 1;
 					
@@ -321,17 +328,13 @@ module TSOS {
 						var tempRow = this.hexToDec(y.charAt(0));
 						var tempCol = this.hexToDec(y.charAt(1));
 						
-						_StdOut.putText("entered.");
 						while (_Memory[memDivision][tempRow][tempCol] !== "00") {
 							var letter = _Memory[memDivision][tempRow][tempCol];
-							var r = letter.charAt(0);
-							var c = letter.charAt(1);
+							var r = +(letter.charAt(0));
+							var c = +(letter.charAt(1));
 							
-							_StdOut.putText("in loop.");
 							var dec: number = (r * 15) + c + r;
-							_StdOut.putText(r + "|" + c + " dec: " + dec + "\n");
 							var str = String.fromCharCode(dec);
-							_StdOut.putText(r + "|" + c + " str: " + dec + str + "\n");
 							_StdOut.putText(str);
 							
 							tempCol++;
@@ -340,7 +343,6 @@ module TSOS {
 								tempCol = 0;
 							}
 						}
-						_StdOut.putText("after loop.");
 					}
 					
 					this.PC = col + 1;
