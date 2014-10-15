@@ -38,45 +38,363 @@ var TSOS;
 
         Cpu.prototype.cycle = function () {
             _Kernel.krnTrace('CPU cycle');
+
             // TODO: Accumulate CPU usage and profiling statistics here.
             // Do the real work here. Be sure to set this.isExecuting appropriately.
+            var instruction = _Memory[memDivision][_row][_col];
+
+            // Determine Instruction
+            if (instruction === "A9") {
+                // Retrieves constant.
+                _col++;
+                if (_col >= 16) {
+                    _row++;
+                    _col = 0;
+                }
+                var con = _Memory[memDivision][_row][_col];
+
+                // Put constant in ACC. Updates PC.
+                _CPU.Acc = con;
+                _CPU.PC = _col + 1;
+            } else if (instruction === "AD") {
+                // Retrieves memory address
+                _col++;
+                if (_col >= 16) {
+                    _row++;
+                    _col = 0;
+                }
+                var addr = _Memory[memDivision][_row][_col];
+                _col++; // increment _col to bypass most significant bits.
+
+                // they are made irrelevant by 3d array and memDivision.
+                if (_col >= 16) {
+                    _row++;
+                    _col = 0;
+                }
+
+                // Convert memory address to decimal for array use
+                var tempRow = this.hexToDec(addr.charAt(0));
+                var tempCol = this.hexToDec(addr.charAt(1));
+
+                // Put value in ACC. Updates PC.
+                this.Acc = _Memory[memDivision][tempRow][tempCol];
+                this.PC = _col + 1;
+            } else if (instruction === "8D") {
+                // Retrieves memory address
+                _col++;
+                if (_col >= 16) {
+                    _row++;
+                    _col = 0;
+                }
+                var addr = _Memory[memDivision][_row][_col];
+                _col++; // increment col to bypass most significant bits.
+
+                // they are made irrelevant by 3d array and memDivision.
+                if (_col >= 16) {
+                    _row++;
+                    _col = 0;
+                }
+
+                // Convert memory address to decimal for array use
+                var tempRow = this.hexToDec(addr.charAt(0));
+                var tempCol = this.hexToDec(addr.charAt(1));
+
+                // Put ACC in memory. Updates PC.
+                _Memory[memDivision][tempRow][tempCol] = this.Acc;
+                this.PC = _col + 1;
+
+                // Update UI.
+                tempRow = tempRow * 2;
+                if (tempCol > 7) {
+                    tempCol = tempCol - 8;
+                    tempRow++;
+                }
+                memory[tempRow][tempCol] = this.Acc;
+                TSOS.Control.fillMemory();
+            } else if (instruction === "6D") {
+                // Get address
+                _col++;
+                if (_col >= 16) {
+                    _row++;
+                    _col = 0;
+                }
+                var addr = _Memory[memDivision][_row][_col];
+                _col++; // increment col to bypass most significant bits.
+
+                // they are made irrelevant by 3d array and memDivision.
+                if (_col >= 16) {
+                    _row++;
+                    _col = 0;
+                }
+
+                // Convert memory address to decimal for array use
+                var tempRow = this.hexToDec(addr.charAt(0));
+                var tempCol = this.hexToDec(addr.charAt(1));
+
+                var a = _Memory[memDivision][tempRow][tempCol];
+
+                // Retrieve constant from ACC and convert to deimal for addition.
+                var b = this.hexToDec(this.Acc);
+
+                // Add a and b.
+                var sum = +a + b;
+
+                // Convert to hex and store in ACC. Updates PC.
+                var c = +(sum % 16);
+                var r = Math.round(+(sum / 16));
+
+                this.Acc = this.decToHex(r) + this.decToHex(c);
+                this.PC = _col + 1;
+            } else if (instruction === "A2") {
+                // Retrieves constant.
+                _col++;
+                if (_col >= 16) {
+                    _row++;
+                    _col = 0;
+                }
+                var con = _Memory[memDivision][_row][_col];
+
+                // Put constant in X register. Updates PC.
+                this.Xreg = con;
+                this.PC = _col + 1;
+            } else if (instruction === "AE") {
+                // Retrieves memory address
+                _col++;
+                if (_col >= 16) {
+                    _row++;
+                    _col = 0;
+                }
+                var addr = _Memory[memDivision][_row][_col];
+                _col++; // increment col to bypass most significant bits.
+
+                // they are made irrelevant by 3d array and memDivision.
+                if (_col >= 16) {
+                    _row++;
+                    _col = 0;
+                }
+
+                // Convert memory address to decimal for array use
+                var tempRow = this.hexToDec(addr.charAt(0));
+                var tempCol = this.hexToDec(addr.charAt(1));
+
+                // Put value in X register. Updates PC.
+                this.Xreg = _Memory[memDivision][tempRow][tempCol];
+                this.PC = _col + 1;
+            } else if (instruction === "A0") {
+                // Retrieves constant.
+                _col++;
+                if (_col >= 16) {
+                    _row++;
+                    _col = 0;
+                }
+                var con = _Memory[memDivision][_row][_col];
+
+                // Put constant in Y register. Updates PC.
+                this.Yreg = con;
+                this.PC = _col + 1;
+            } else if (instruction === "AC") {
+                // Retrieves memory address
+                _col++;
+                if (_col >= 16) {
+                    _row++;
+                    _col = 0;
+                }
+                var addr = _Memory[memDivision][_row][_col];
+                _col++; // increment col to bypass most significant bits.
+
+                // they are made irrelevant by 3d array and memDivision.
+                if (_col >= 16) {
+                    _row++;
+                    _col = 0;
+                }
+
+                // Convert memory address to decimal for array use
+                var tempRow = this.hexToDec(addr.charAt(0));
+                var tempCol = this.hexToDec(addr.charAt(1));
+
+                // Put value in Y register. Updates PC.
+                this.Yreg = _Memory[memDivision][tempRow][tempCol];
+                this.PC = _col + 1;
+            } else if (instruction === "EA") {
+                // Updates PC.
+                this.PC = _col + 1;
+            } else if (instruction === "00") {
+                // Breaks at "00"
+                // Updates PCB
+                TSOS.Control.displayPCB(_id, instruction, 1);
+                _ProcState = "terminated";
+                TSOS.Control.displayPCB(_id, instruction, 1);
+                this.isExecuting = false;
+            } else if (instruction === "EC") {
+                // Retrieves memory address
+                _col++;
+                if (_col >= 16) {
+                    _row++;
+                    _col = 0;
+                }
+                var addr = _Memory[memDivision][_row][_col];
+                _col++; // increment col to bypass most significant bits.
+
+                // they are made irrelevant by 3d array and memDivision.
+                if (_col >= 16) {
+                    _row++;
+                    _col = 0;
+                }
+
+                // Convert memory address to decimal for array use
+                var tempRow = this.hexToDec(addr.charAt(0));
+                var tempCol = this.hexToDec(addr.charAt(1));
+
+                // Compare byte in memory to value in X register
+                if (this.Xreg === _Memory[memDivision][tempRow][tempCol]) {
+                    this.Zflag = 1;
+                } else {
+                    this.Zflag = 0;
+                }
+
+                // Updates PC.
+                this.PC = _col + 1;
+            } else if (instruction === "D0") {
+                // Determine how many bytes to branch.
+                _col++;
+                if (_col >= 16) {
+                    _row++;
+                    _col = 0;
+                }
+
+                if (this.Zflag === 0) {
+                    // Branch X bytes
+                    var bran = _Memory[memDivision][_row][_col];
+                    var branR = this.hexToDec(bran.charAt(0));
+                    var branC = this.hexToDec(bran.charAt(1));
+                    var b = ((branR / 16) * 10) + (branC % 16);
+
+                    for (var i = 1; i <= b; i++) {
+                        _col++;
+                        if (_col >= 16) {
+                            _row++;
+                            _col = 0;
+                        }
+                    }
+                }
+
+                // Updates PC.
+                this.PC = _col + 1;
+            } else if (instruction === "EE") {
+                // Retrieves memory address
+                _col++;
+                if (_col >= 16) {
+                    _row++;
+                    _col = 0;
+                }
+                var addr = _Memory[memDivision][_row][_col];
+                _col++; // increment col to bypass most significant bits.
+
+                // they are made irrelevant by 3d array and memDivision.
+                if (_col >= 16) {
+                    _row++;
+                    _col = 0;
+                }
+
+                // Convert memory address to decimal for array use
+                var tempRow = this.hexToDec(addr.charAt(0));
+                var tempCol = this.hexToDec(addr.charAt(1));
+
+                // Increments value at address. Updates PC.
+                var incrementedC = this.hexToDec(_Memory[memDivision][tempRow][tempCol].charAt(1)) + 1;
+                var incrementedR = _Memory[memDivision][tempRow][tempCol].charAt(0);
+                if (incrementedC === 16) {
+                    incrementedR++;
+                    incrementedC = 0;
+                }
+                _Memory[memDivision][tempRow][tempCol] = this.decToHex(incrementedR) + this.decToHex(incrementedC);
+                var value = _Memory[memDivision][tempRow][tempCol];
+                this.PC = _col + 1;
+
+                // Update UI.
+                tempRow = tempRow * 2;
+                if (tempCol > 7) {
+                    tempCol = tempCol - 8;
+                    tempRow++;
+                }
+                memory[tempRow][tempCol] = value;
+                TSOS.Control.fillMemory();
+            } else if (instruction === "FF") {
+                var y = this.Yreg + "";
+
+                // Determine value in X register
+                if (+this.Xreg === 1) {
+                    _StdOut.putText(y);
+                } else {
+                    // Convert memory address to decimal for array use
+                    var tempRow = this.hexToDec(y.charAt(0));
+                    var tempCol = this.hexToDec(y.charAt(1));
+
+                    while (_Memory[memDivision][tempRow][tempCol] !== "00") {
+                        var letter = _Memory[memDivision][tempRow][tempCol];
+                        var r = +(letter.charAt(0));
+                        var c = +(letter.charAt(1));
+
+                        var dec = (r * 15) + c + r;
+                        var str = String.fromCharCode(dec);
+                        _StdOut.putText(str);
+
+                        tempCol++;
+                        if (tempCol >= 16) {
+                            tempRow++;
+                            tempCol = 0;
+                        }
+                    }
+                }
+
+                this.PC = _col + 1;
+            } else {
+            }
+
+            // increment col and _row
+            _col++;
+            if (_col >= 16) {
+                _row++;
+                _col = 0;
+            }
+
+            // Updates PCB
+            TSOS.Control.displayPCB(_id, instruction, 1);
+
+            instruction = _Memory[memDivision][_row][_col]; // Next instruction
         };
 
         Cpu.prototype.executeProgram = function (memDivision, id) {
             var instruction = _Memory[memDivision][0][0];
-            var row = 0;
-            var col = 0;
-            var nextRow = 0;
-            var nextCol = 1;
             _ProcState = "running";
             while (instruction !== "00") {
                 // Determine Instruction
                 if (instruction === "A9") {
                     // Retrieves constant.
-                    col++;
-                    if (col >= 16) {
-                        row++;
-                        col = 0;
+                    _col++;
+                    if (_col >= 16) {
+                        _row++;
+                        _col = 0;
                     }
-                    var con = _Memory[memDivision][row][col];
+                    var con = _Memory[memDivision][_row][_col];
 
                     // Put constant in ACC. Updates PC.
                     _CPU.Acc = con;
-                    _CPU.PC = col + 1;
+                    _CPU.PC = _col + 1;
                 } else if (instruction === "AD") {
                     // Retrieves memory address
-                    col++;
-                    if (col >= 16) {
-                        row++;
-                        col = 0;
+                    _col++;
+                    if (_col >= 16) {
+                        _row++;
+                        _col = 0;
                     }
-                    var addr = _Memory[memDivision][row][col];
-                    col++; // increment col to bypass most significant bits.
+                    var addr = _Memory[memDivision][_row][_col];
+                    _col++; // increment _col to bypass most significant bits.
 
                     // they are made irrelevant by 3d array and memDivision.
-                    if (col >= 16) {
-                        row++;
-                        col = 0;
+                    if (_col >= 16) {
+                        _row++;
+                        _col = 0;
                     }
 
                     // Convert memory address to decimal for array use
@@ -85,21 +403,21 @@ var TSOS;
 
                     // Put value in ACC. Updates PC.
                     this.Acc = _Memory[memDivision][tempRow][tempCol];
-                    this.PC = col + 1;
+                    this.PC = _col + 1;
                 } else if (instruction === "8D") {
                     // Retrieves memory address
-                    col++;
-                    if (col >= 16) {
-                        row++;
-                        col = 0;
+                    _col++;
+                    if (_col >= 16) {
+                        _row++;
+                        _col = 0;
                     }
-                    var addr = _Memory[memDivision][row][col];
-                    col++; // increment col to bypass most significant bits.
+                    var addr = _Memory[memDivision][_row][_col];
+                    _col++; // increment col to bypass most significant bits.
 
                     // they are made irrelevant by 3d array and memDivision.
-                    if (col >= 16) {
-                        row++;
-                        col = 0;
+                    if (_col >= 16) {
+                        _row++;
+                        _col = 0;
                     }
 
                     // Convert memory address to decimal for array use
@@ -108,7 +426,7 @@ var TSOS;
 
                     // Put ACC in memory. Updates PC.
                     _Memory[memDivision][tempRow][tempCol] = this.Acc;
-                    this.PC = col + 1;
+                    this.PC = _col + 1;
 
                     // Update UI.
                     tempRow = tempRow * 2;
@@ -120,18 +438,18 @@ var TSOS;
                     TSOS.Control.fillMemory();
                 } else if (instruction === "6D") {
                     // Get address
-                    col++;
-                    if (col >= 16) {
-                        row++;
-                        col = 0;
+                    _col++;
+                    if (_col >= 16) {
+                        _row++;
+                        _col = 0;
                     }
-                    var addr = _Memory[memDivision][row][col];
-                    col++; // increment col to bypass most significant bits.
+                    var addr = _Memory[memDivision][_row][_col];
+                    _col++; // increment col to bypass most significant bits.
 
                     // they are made irrelevant by 3d array and memDivision.
-                    if (col >= 16) {
-                        row++;
-                        col = 0;
+                    if (_col >= 16) {
+                        _row++;
+                        _col = 0;
                     }
 
                     // Convert memory address to decimal for array use
@@ -151,33 +469,33 @@ var TSOS;
                     var r = Math.round(+(sum / 16));
 
                     this.Acc = this.decToHex(r) + this.decToHex(c);
-                    this.PC = col + 1;
+                    this.PC = _col + 1;
                 } else if (instruction === "A2") {
                     // Retrieves constant.
-                    col++;
-                    if (col >= 16) {
-                        row++;
-                        col = 0;
+                    _col++;
+                    if (_col >= 16) {
+                        _row++;
+                        _col = 0;
                     }
-                    var con = _Memory[memDivision][row][col];
+                    var con = _Memory[memDivision][_row][_col];
 
                     // Put constant in X register. Updates PC.
                     this.Xreg = con;
-                    this.PC = col + 1;
+                    this.PC = _col + 1;
                 } else if (instruction === "AE") {
                     // Retrieves memory address
-                    col++;
-                    if (col >= 16) {
-                        row++;
-                        col = 0;
+                    _col++;
+                    if (_col >= 16) {
+                        _row++;
+                        _col = 0;
                     }
-                    var addr = _Memory[memDivision][row][col];
-                    col++; // increment col to bypass most significant bits.
+                    var addr = _Memory[memDivision][_row][_col];
+                    _col++; // increment col to bypass most significant bits.
 
                     // they are made irrelevant by 3d array and memDivision.
-                    if (col >= 16) {
-                        row++;
-                        col = 0;
+                    if (_col >= 16) {
+                        _row++;
+                        _col = 0;
                     }
 
                     // Convert memory address to decimal for array use
@@ -186,33 +504,33 @@ var TSOS;
 
                     // Put value in X register. Updates PC.
                     this.Xreg = _Memory[memDivision][tempRow][tempCol];
-                    this.PC = col + 1;
+                    this.PC = _col + 1;
                 } else if (instruction === "A0") {
                     // Retrieves constant.
-                    col++;
-                    if (col >= 16) {
-                        row++;
-                        col = 0;
+                    _col++;
+                    if (_col >= 16) {
+                        _row++;
+                        _col = 0;
                     }
-                    var con = _Memory[memDivision][row][col];
+                    var con = _Memory[memDivision][_row][_col];
 
                     // Put constant in Y register. Updates PC.
                     this.Yreg = con;
-                    this.PC = col + 1;
+                    this.PC = _col + 1;
                 } else if (instruction === "AC") {
                     // Retrieves memory address
-                    col++;
-                    if (col >= 16) {
-                        row++;
-                        col = 0;
+                    _col++;
+                    if (_col >= 16) {
+                        _row++;
+                        _col = 0;
                     }
-                    var addr = _Memory[memDivision][row][col];
-                    col++; // increment col to bypass most significant bits.
+                    var addr = _Memory[memDivision][_row][_col];
+                    _col++; // increment col to bypass most significant bits.
 
                     // they are made irrelevant by 3d array and memDivision.
-                    if (col >= 16) {
-                        row++;
-                        col = 0;
+                    if (_col >= 16) {
+                        _row++;
+                        _col = 0;
                     }
 
                     // Convert memory address to decimal for array use
@@ -221,25 +539,25 @@ var TSOS;
 
                     // Put value in Y register. Updates PC.
                     this.Yreg = _Memory[memDivision][tempRow][tempCol];
-                    this.PC = col + 1;
+                    this.PC = _col + 1;
                 } else if (instruction === "EA") {
                     // Updates PC.
-                    this.PC = col + 1;
+                    this.PC = _col + 1;
                 } else if (instruction === "00") {
                 } else if (instruction === "EC") {
                     // Retrieves memory address
-                    col++;
-                    if (col >= 16) {
-                        row++;
-                        col = 0;
+                    _col++;
+                    if (_col >= 16) {
+                        _row++;
+                        _col = 0;
                     }
-                    var addr = _Memory[memDivision][row][col];
-                    col++; // increment col to bypass most significant bits.
+                    var addr = _Memory[memDivision][_row][_col];
+                    _col++; // increment col to bypass most significant bits.
 
                     // they are made irrelevant by 3d array and memDivision.
-                    if (col >= 16) {
-                        row++;
-                        col = 0;
+                    if (_col >= 16) {
+                        _row++;
+                        _col = 0;
                     }
 
                     // Convert memory address to decimal for array use
@@ -254,47 +572,47 @@ var TSOS;
                     }
 
                     // Updates PC.
-                    this.PC = col + 1;
+                    this.PC = _col + 1;
                 } else if (instruction === "D0") {
                     // Determine how many bytes to branch.
-                    col++;
-                    if (col >= 16) {
-                        row++;
-                        col = 0;
+                    _col++;
+                    if (_col >= 16) {
+                        _row++;
+                        _col = 0;
                     }
 
                     if (this.Zflag === 0) {
                         // Branch X bytes
-                        var bran = _Memory[memDivision][row][col];
+                        var bran = _Memory[memDivision][_row][_col];
                         var branR = this.hexToDec(bran.charAt(0));
                         var branC = this.hexToDec(bran.charAt(1));
                         var b = ((branR / 16) * 10) + (branC % 16);
 
                         for (var i = 1; i <= b; i++) {
-                            col++;
-                            if (col >= 16) {
-                                row++;
-                                col = 0;
+                            _col++;
+                            if (_col >= 16) {
+                                _row++;
+                                _col = 0;
                             }
                         }
                     }
 
                     // Updates PC.
-                    this.PC = col + 1;
+                    this.PC = _col + 1;
                 } else if (instruction === "EE") {
                     // Retrieves memory address
-                    col++;
-                    if (col >= 16) {
-                        row++;
-                        col = 0;
+                    _col++;
+                    if (_col >= 16) {
+                        _row++;
+                        _col = 0;
                     }
-                    var addr = _Memory[memDivision][row][col];
-                    col++; // increment col to bypass most significant bits.
+                    var addr = _Memory[memDivision][_row][_col];
+                    _col++; // increment col to bypass most significant bits.
 
                     // they are made irrelevant by 3d array and memDivision.
-                    if (col >= 16) {
-                        row++;
-                        col = 0;
+                    if (_col >= 16) {
+                        _row++;
+                        _col = 0;
                     }
 
                     // Convert memory address to decimal for array use
@@ -310,7 +628,7 @@ var TSOS;
                     }
                     _Memory[memDivision][tempRow][tempCol] = this.decToHex(incrementedR) + this.decToHex(incrementedC);
                     var value = _Memory[memDivision][tempRow][tempCol];
-                    this.PC = col + 1;
+                    this.PC = _col + 1;
 
                     // Update UI.
                     tempRow = tempRow * 2;
@@ -348,25 +666,21 @@ var TSOS;
                         }
                     }
 
-                    this.PC = col + 1;
+                    this.PC = _col + 1;
                 } else {
                 }
 
-                // increment col and row
-                col++;
-                nextCol++;
-                if (col >= 16) {
-                    row++;
-                    col = 0;
-                } else if (nextCol === 16) {
-                    nextRow++;
-                    nextCol = 0;
+                // increment col and _row
+                _col++;
+                if (_col >= 16) {
+                    _row++;
+                    _col = 0;
                 }
 
                 // Updates PCB
                 TSOS.Control.displayPCB(id, instruction, 1);
 
-                instruction = _Memory[memDivision][row][col]; // Next instruction
+                instruction = _Memory[memDivision][_row][_col]; // Next instruction
                 // Does not continue executing until next Clock Pulse
             }
 

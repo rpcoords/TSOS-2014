@@ -445,9 +445,13 @@ module TSOS {
 				
 				_ProcState = "ready";
 				Control.displayPCB(id, "0", 1);
+				memDivision = id[1];
+				_id = id[0];
+				_col = 0;
+				_row = 0;
 				
 				_CPU.isExecuting = true;
-				_CPU.executeProgram(id[1], args);
+				//_CPU.executeProgram(id[1], args);
 				
 				_MemTracker[id[1]] = false;
 				_MemoryPointer = id[1];

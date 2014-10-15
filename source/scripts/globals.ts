@@ -96,6 +96,11 @@ for (var a = 0; a <= 2; a++) {
 	_MemTracker[a] = false;
 }
 
+var memDivision = 0;
+var _id = 0;
+var _col = 0;
+var _row = 0;
+
 // Standard input and output
 var _StdIn  = null;
 var _StdOut = null;
