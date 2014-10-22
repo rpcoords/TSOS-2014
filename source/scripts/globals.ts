@@ -123,6 +123,9 @@ var _ScrollQueue = null;
 // Stops kernel if crash
 var _Crash = false;
 
+// Quantum (used for Round Robin execution)
+var _Quantum = 6;
+
 // At least this OS is not trying to kill you. (Yet.)
 var _SarcasticMode: boolean = false;
 

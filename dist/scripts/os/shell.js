@@ -81,6 +81,10 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellRun, "run", "<pid> - Runs program for specified pid.");
             this.commandList[this.commandList.length] = sc;
 
+            // quantum <int>
+            sc = new TSOS.ShellCommand(this.shellQuantum, "quantum", "<int> - Allows user to change quantum value.");
+            this.commandList[this.commandList.length] = sc;
+
             // processes - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             //
@@ -425,6 +429,11 @@ var TSOS;
                 _MemTracker[id[1]] = false;
                 _MemoryPointer = id[1];
             }
+        };
+
+        Shell.prototype.shellQuantum = function (args) {
+            _Quantum = args;
+            _StdOut.putText("New quantum value: " + args);
         };
         return Shell;
     })();

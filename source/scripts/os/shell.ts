@@ -116,6 +116,12 @@ module TSOS {
 								  "run",
 								  "<pid> - Runs program for specified pid.");
 			this.commandList[this.commandList.length] = sc;
+			
+			// quantum <int>
+			sc = new ShellCommand(this.shellQuantum,
+								  "quantum", 
+								  "<int> - Allows user to change quantum value.");
+			this.commandList[this.commandList.length] = sc;
 
             // processes - list the running processes and their IDs
             // kill <id> - kills the specified process id.
@@ -456,6 +462,11 @@ module TSOS {
 				_MemTracker[id[1]] = false;
 				_MemoryPointer = id[1];
 			}
+		}
+		
+		public shellQuantum(args) {
+			_Quantum = args;
+			_StdOut.putText("New quantum value: " + args);
 		}
     }
 }
