@@ -122,6 +122,12 @@ module TSOS {
 								  "quantum", 
 								  "<int> - Allows user to change quantum value.");
 			this.commandList[this.commandList.length] = sc;
+			
+			// clearmem
+			sc = new ShellCommand(this.shellClearmem, 
+								  "clearmem", 
+								  "- clears all memory partitions.");
+			this.commandList[this.commandList.length] = sc;
 
             // processes - list the running processes and their IDs
             // kill <id> - kills the specified process id.
@@ -467,6 +473,25 @@ module TSOS {
 		public shellQuantum(args) {
 			_Quantum = args;
 			_StdOut.putText("New quantum value: " + args);
+		}
+		
+		public shellClearmem() {
+			// Clears _Memory.
+			for (var a = 0; a <= 2; a++) {
+				for (var b = 0; b <= 15; b++) {
+					for (var c = 0; c <= 15; c++) {
+						_Memory[a][b][c] = "00";
+					}
+				}
+			}
+			
+			_MemoryPointer = 0;
+			for (var a = 0; a <= 2; a++) {
+				_MemTracker[a] = false;
+			}
+			
+			// Clears memory displayed.
+			Control.clearMemory();
 		}
     }
 }

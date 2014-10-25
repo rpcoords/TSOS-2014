@@ -57,12 +57,18 @@ var TSOS;
         };
 
         Control.initMemory = function () {
-            for (var a = 0; a <= 31; a++) {
+            for (var a = 0; a <= 95; a++) {
                 memory[a] = new Array(8);
             }
 
             var taMemory = document.getElementById("taMemory");
-            for (var a = 0; a <= 31; a++) {
+            for (var a = 0; a <= 95; a++) {
+                if (a === 32) {
+                    taMemory.value = taMemory.value + "\n";
+                } else if (a === 64) {
+                    taMemory.value = taMemory.value + "\n";
+                }
+
                 taMemory.value = taMemory.value + "0x" + memIndex[a] + " | ";
                 for (var b = 0; b <= 7; b++) {
                     memory[a][b] = "00";
@@ -78,9 +84,37 @@ var TSOS;
             // Clear taMemory
             taMemory.value = "";
 
-            for (var a = 0; a <= 31; a++) {
+            for (var a = 0; a <= 95; a++) {
+                if (a === 32) {
+                    taMemory.value = taMemory.value + "\n";
+                } else if (a === 64) {
+                    taMemory.value = taMemory.value + "\n";
+                }
+
                 taMemory.value = taMemory.value + "0x" + memIndex[a] + " | ";
                 for (var b = 0; b <= 7; b++) {
+                    taMemory.value = taMemory.value + memory[a][b] + " ";
+                }
+                taMemory.value = taMemory.value + "\n";
+            }
+        };
+
+        Control.clearMemory = function () {
+            var taMemory = document.getElementById("taMemory");
+
+            // Clear taMemory
+            taMemory.value = "";
+
+            for (var a = 0; a <= 95; a++) {
+                if (a === 32) {
+                    taMemory.value = taMemory.value + "\n";
+                } else if (a === 64) {
+                    taMemory.value = taMemory.value + "\n";
+                }
+
+                taMemory.value = taMemory.value + "0x" + memIndex[a] + " | ";
+                for (var b = 0; b <= 7; b++) {
+                    memory[a][b] = "00";
                     taMemory.value = taMemory.value + memory[a][b] + " ";
                 }
                 taMemory.value = taMemory.value + "\n";
