@@ -149,6 +149,7 @@ var _PIDCounter = 0;
 var _PIDs = null;
 var _Process = null;
 var _ProcState = "";
+var _Actives = new Array();
 
 var _MemoryPointer = 0;
 var _MemTracker = new Array(3);

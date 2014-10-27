@@ -216,6 +216,9 @@ module TSOS {
 					this.PC = _col + 1;
 				} else if (instruction === "00") { // Break (not memory address or constant)
 					// Breaks at "00"
+					// Removes id from _Actives
+					_Actives.splice(_Actives.indexOf(_id), 1);
+					
 					// Updates PCB
 					Control.displayPCB(_id, instruction, 1);
 					_ProcState = "terminated";
@@ -262,13 +265,16 @@ module TSOS {
 						var bran = _Memory[memDivision][_row][_col];
 						var branR = this.hexToDec(bran.charAt(0));
 						var branC = this.hexToDec(bran.charAt(1));
-						var b = ((branR / 16) * 10) + (branC % 16);
+						var b = (branR * 16) + branC;
 						
 						for (var i = 1; i <= b; i++) {
 							_col++;
 							if (_col >= 16) {
 								_row++;
 								_col = 0;
+								if (_row >= 16) {
+									_row = 0;
+								}
 							}
 						}
 					}
@@ -326,8 +332,8 @@ module TSOS {
 						
 						while (_Memory[memDivision][tempRow][tempCol] !== "00") {
 							var letter = _Memory[memDivision][tempRow][tempCol];
-							var r = +(letter.charAt(0));
-							var c = +(letter.charAt(1));
+							var r = this.hexToDec(letter.charAt(0));
+							var c = this.hexToDec(letter.charAt(1));
 							
 							var dec: number = (r * 15) + c + r;
 							var str = String.fromCharCode(dec);

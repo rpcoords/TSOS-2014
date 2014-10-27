@@ -153,6 +153,7 @@ var _PIDCounter = 0;
 var _PIDs = null; // Initialized in kernel
 var _Process = null; // Initialized when program is executed
 var _ProcState = "";
+var _Actives = new Array(); // All PIDs that are active.
 
 var _MemoryPointer = 0;
 var _MemTracker = new Array(3);

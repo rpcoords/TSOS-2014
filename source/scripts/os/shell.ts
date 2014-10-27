@@ -128,11 +128,20 @@ module TSOS {
 								  "clearmem", 
 								  "- clears all memory partitions.");
 			this.commandList[this.commandList.length] = sc;
+			
+			// ps 
+			sc = new ShellCommand(this.shellPS, 
+								  "ps", 
+								  "- display PIDs for all active processes.");
+			this.commandList[this.commandList.length] = sc;
 
             // processes - list the running processes and their IDs
             // kill <id> - kills the specified process id.
+			sc = new ShellCommand(this.shellKill,
+								  "kill", 
+								  "<pid> - kills process with specified pid.");
+			this.commandList[this.commandList.length] = sc;
 
-            //
             // Display the initial prompt.
             this.putPrompt();
 			Control.hostLog("shell launched", "shell");
@@ -410,6 +419,21 @@ module TSOS {
 						currA++;
 					}
 					
+					// if instruction is "00", move to next memory partition.
+				/*	if (instruction === "00") {
+						_MemoryPointer++;
+						_StdOut.putText(_MemoryPointer + ":" + currA + "-" + currB);
+						if (_MemoryPointer === 1) {
+							currA = 32;
+						} else if (_MemoryPointer === 2) {
+							currA = 64;
+						}
+						currB = 0;
+						
+						memLocationA = 0;
+						memLocationB = 0;
+					} */
+					
 					instruction = "";
 				}
 			}
@@ -457,6 +481,7 @@ module TSOS {
 				
 				_ProcState = "ready";
 				Control.displayPCB(id, "0", 1);
+				_Actives.push(args);
 				memDivision = id[1];
 				_id = id[0];
 				_col = 0;
@@ -492,6 +517,27 @@ module TSOS {
 			
 			// Clears memory displayed.
 			Control.clearMemory();
+		}
+		
+		public shellPS() {
+			_StdOut.putText("Active Processes: ");
+			//_StdOut.putText("|" + _PIDs.getSize() + "|");
+			for (var a = 0; a < _Actives.length; a++) {
+				var id = _Actives[a];
+				_StdOut.putText(id + "");
+				
+				// if a != length, add "; ".
+				if (a === (_Actives.length - 1)) {
+				} else {
+					_StdOut.putText("; ");
+				}
+				
+				//_PIDs.enqueue(id);
+			}
+		}
+		
+		public shellKill(args) {
+			
 		}
     }
 }

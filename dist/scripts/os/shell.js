@@ -89,9 +89,15 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellClearmem, "clearmem", "- clears all memory partitions.");
             this.commandList[this.commandList.length] = sc;
 
+            // ps
+            sc = new TSOS.ShellCommand(this.shellPS, "ps", "- display PIDs for all active processes.");
+            this.commandList[this.commandList.length] = sc;
+
             // processes - list the running processes and their IDs
             // kill <id> - kills the specified process id.
-            //
+            sc = new TSOS.ShellCommand(this.shellKill, "kill", "<pid> - kills process with specified pid.");
+            this.commandList[this.commandList.length] = sc;
+
             // Display the initial prompt.
             this.putPrompt();
             TSOS.Control.hostLog("shell launched", "shell");
@@ -375,6 +381,20 @@ var TSOS;
                         currA++;
                     }
 
+                    // if instruction is "00", move to next memory partition.
+                    /*	if (instruction === "00") {
+                    _MemoryPointer++;
+                    _StdOut.putText(_MemoryPointer + ":" + currA + "-" + currB);
+                    if (_MemoryPointer === 1) {
+                    currA = 32;
+                    } else if (_MemoryPointer === 2) {
+                    currA = 64;
+                    }
+                    currB = 0;
+                    
+                    memLocationA = 0;
+                    memLocationB = 0;
+                    } */
                     instruction = "";
                 }
             }
@@ -422,6 +442,7 @@ var TSOS;
 
                 _ProcState = "ready";
                 TSOS.Control.displayPCB(id, "0", 1);
+                _Actives.push(args);
                 memDivision = id[1];
                 _id = id[0];
                 _col = 0;
@@ -456,6 +477,25 @@ var TSOS;
 
             // Clears memory displayed.
             TSOS.Control.clearMemory();
+        };
+
+        Shell.prototype.shellPS = function () {
+            _StdOut.putText("Active Processes: ");
+
+            for (var a = 0; a < _Actives.length; a++) {
+                var id = _Actives[a];
+                _StdOut.putText(id + "");
+
+                // if a != length, add "; ".
+                if (a === (_Actives.length - 1)) {
+                } else {
+                    _StdOut.putText("; ");
+                }
+                //_PIDs.enqueue(id);
+            }
+        };
+
+        Shell.prototype.shellKill = function (args) {
         };
         return Shell;
     })();
