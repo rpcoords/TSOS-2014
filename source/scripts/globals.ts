@@ -26,6 +26,7 @@ var KEYBOARD_IRQ: number = 1;
 // Global Variables
 //
 var _CPU: TSOS.Cpu;  // Utilize TypeScript's type annotation system to ensure that _CPU is an instance of the Cpu class.
+var _Scheduler: TSOS.Scheduler;
 
 var _OSclock: number = 0;  // Page 23.
 
@@ -152,6 +153,7 @@ memIndex[95] = "2F8";
 var _PIDCounter = 0;
 var _PIDs = null; // Initialized in kernel
 var _Process = null; // Initialized when program is executed
+//_Process = TSOS.Process;
 var _ProcState = "";
 var _Actives = new Array(); // All PIDs that are active.
 
@@ -165,6 +167,9 @@ var memDivision = 0;
 var _id = 0;
 var _col = 0;
 var _row = 0;
+
+// CPU Scheduler
+//var _Scheduler = TSOS.Scheduler;
 
 // Standard input and output
 var _StdIn  = null;

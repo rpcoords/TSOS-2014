@@ -17,6 +17,7 @@ var TSOS;
             this.apologies = "[sorry]";
         }
         Shell.prototype.init = function () {
+            TSOS.Control.hostLog("began launch", "shell");
             var sc = null;
 
             //
@@ -44,6 +45,7 @@ var TSOS;
             // trace <on | off>
             sc = new TSOS.ShellCommand(this.shellTrace, "trace", "<on | off> - Turns the OS trace on or off.");
             this.commandList[this.commandList.length] = sc;
+            TSOS.Control.hostLog("trace created", "shell");
 
             // rot13 <string>
             sc = new TSOS.ShellCommand(this.shellRot13, "rot13", "<string> - Does rot13 obfuscation on <string>.");
@@ -64,6 +66,7 @@ var TSOS;
             // date
             sc = new TSOS.ShellCommand(this.shellDate, "date", "- Displays the current date and time.");
             this.commandList[this.commandList.length] = sc;
+            TSOS.Control.hostLog("date created", "shell");
 
             // status <string>
             sc = new TSOS.ShellCommand(this.shellStatus, "status", "<string> - Allows user to specify status messages.");
@@ -80,6 +83,7 @@ var TSOS;
             // run <pid>
             sc = new TSOS.ShellCommand(this.shellRun, "run", "<pid> - Runs program for specified pid.");
             this.commandList[this.commandList.length] = sc;
+            TSOS.Control.hostLog("run created", "shell");
 
             // quantum <int>
             sc = new TSOS.ShellCommand(this.shellQuantum, "quantum", "<int> - Allows user to change quantum value.");
@@ -93,13 +97,19 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellPS, "ps", "- display PIDs for all active processes.");
             this.commandList[this.commandList.length] = sc;
 
+            // runall
+            sc = new TSOS.ShellCommand(this.shellRunall, "runall", "- executes all programs in memory at once.");
+            this.commandList[this.commandList.length] = sc;
+
             // processes - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             sc = new TSOS.ShellCommand(this.shellKill, "kill", "<pid> - kills process with specified pid.");
             this.commandList[this.commandList.length] = sc;
+            TSOS.Control.hostLog("kill created", "shell");
 
             // Display the initial prompt.
             this.putPrompt();
+            TSOS.Control.hostLog("prompt created", "shell");
             TSOS.Control.hostLog("shell launched", "shell");
         };
 
@@ -348,6 +358,11 @@ var TSOS;
                 currA = 64;
             }
 
+            if (code === "") {
+                _StdOut.putText("No program to load into memory.");
+                invalid = true;
+            }
+
             for (var a = 0; a <= code.length - 1; a++) {
                 var letter = code.charAt(a);
 
@@ -493,6 +508,9 @@ var TSOS;
                 }
                 //_PIDs.enqueue(id);
             }
+        };
+
+        Shell.prototype.shellRunall = function () {
         };
 
         Shell.prototype.shellKill = function (args) {

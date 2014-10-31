@@ -23,6 +23,7 @@ module TSOS {
         }
 
         public init() {
+			Control.hostLog("began launch", "shell");
             var sc = null;
             //
             // Load the command list.
@@ -62,7 +63,7 @@ module TSOS {
                                   "trace",
                                   "<on | off> - Turns the OS trace on or off.");
             this.commandList[this.commandList.length] = sc;
-
+			Control.hostLog("trace created", "shell");
             // rot13 <string>
             sc = new ShellCommand(this.shellRot13,
                                   "rot13",
@@ -92,7 +93,7 @@ module TSOS {
 								  "date", 
 								  "- Displays the current date and time.");
 			this.commandList[this.commandList.length] = sc;
-			
+			Control.hostLog("date created", "shell");
 			// status <string>
 			sc = new ShellCommand(this.shellStatus, 
 								  "status", 
@@ -116,7 +117,7 @@ module TSOS {
 								  "run",
 								  "<pid> - Runs program for specified pid.");
 			this.commandList[this.commandList.length] = sc;
-			
+			Control.hostLog("run created", "shell");
 			// quantum <int>
 			sc = new ShellCommand(this.shellQuantum,
 								  "quantum", 
@@ -134,6 +135,12 @@ module TSOS {
 								  "ps", 
 								  "- display PIDs for all active processes.");
 			this.commandList[this.commandList.length] = sc;
+			
+			// runall
+			sc = new ShellCommand(this.shellRunall, 
+								  "runall", 
+								  "- executes all programs in memory at once.");
+			this.commandList[this.commandList.length] = sc;
 
             // processes - list the running processes and their IDs
             // kill <id> - kills the specified process id.
@@ -141,9 +148,10 @@ module TSOS {
 								  "kill", 
 								  "<pid> - kills process with specified pid.");
 			this.commandList[this.commandList.length] = sc;
-
+			Control.hostLog("kill created", "shell");
             // Display the initial prompt.
             this.putPrompt();
+			Control.hostLog("prompt created", "shell");
 			Control.hostLog("shell launched", "shell");
         }
 
@@ -384,6 +392,11 @@ module TSOS {
 				currA = 64;
 			}
 			
+			if (code === "") {
+				_StdOut.putText("No program to load into memory.");
+				invalid = true;
+			}
+			
 			for (var a = 0; a <= code.length - 1; a++) {
 				var letter = code.charAt(a);
 				
@@ -534,6 +547,10 @@ module TSOS {
 				
 				//_PIDs.enqueue(id);
 			}
+		}
+		
+		public shellRunall() {
+			
 		}
 		
 		public shellKill(args) {

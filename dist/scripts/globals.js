@@ -23,6 +23,7 @@ var KEYBOARD_IRQ = 1;
 // Global Variables
 //
 var _CPU;
+var _Scheduler;
 
 var _OSclock = 0;
 
@@ -148,6 +149,8 @@ memIndex[95] = "2F8";
 var _PIDCounter = 0;
 var _PIDs = null;
 var _Process = null;
+
+//_Process = TSOS.Process;
 var _ProcState = "";
 var _Actives = new Array();
 
@@ -162,6 +165,8 @@ var _id = 0;
 var _col = 0;
 var _row = 0;
 
+// CPU Scheduler
+//var _Scheduler = TSOS.Scheduler;
 // Standard input and output
 var _StdIn = null;
 var _StdOut = null;
