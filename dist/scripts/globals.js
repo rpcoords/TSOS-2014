@@ -153,6 +153,7 @@ var _Process = null;
 //_Process = TSOS.Process;
 var _ProcState = "";
 var _Actives = new Array();
+var _PCB;
 
 var _MemoryPointer = 0;
 var _MemTracker = new Array(3);
@@ -165,8 +166,9 @@ var _id = 0;
 var _col = 0;
 var _row = 0;
 
-// CPU Scheduler
-//var _Scheduler = TSOS.Scheduler;
+// Units of time per loaded command (not yet run)
+var _Units = null;
+
 // Standard input and output
 var _StdIn = null;
 var _StdOut = null;

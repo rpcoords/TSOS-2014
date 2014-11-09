@@ -29,6 +29,10 @@ var TSOS;
 
             // Add memory execution start points to xyStatus.
             this.xyStatus.enqueue([0, 0, memD]);
+
+            // Log scheduling event: Added process (PID) to Ready Queue.
+            var msg = "Process " + pid + " added to Ready Queue.";
+            TSOS.Control.hostLog(msg, "CPU scheduler");
         };
 
         Scheduler.prototype.contextSwitch = function () {
@@ -42,21 +46,21 @@ var TSOS;
 
             // Take next process off Ready Queue. Update runningId.
             this.runningId = this.readyQueue.dequeue();
+            _id = this.runningId;
 
             // Take time units value off pidUnits. Update currUnits and remainingUnits.
             // If currUnits > Quantum, use Quantum for remainingUnits.
             this.currUnits = this.pidUnits.dequeue();
-            if (this.currUnits > _Quantum) {
-                this.remainingUnits = _Quantum;
-            } else {
-                this.remainingUnits = this.currUnits;
-            }
+            this.remainingUnits = _Quantum;
 
             // Update memory position using xyStatus.
             var xy = this.xyStatus.dequeue();
             _row = xy[0];
             _col = xy[1];
             memDivision = xy[2];
+
+            // Log scheduling event: Context Switch.
+            TSOS.Control.hostLog("Context Switch", "CPU scheduler");
         };
 
         // Run during every cycle in which a program is executing.

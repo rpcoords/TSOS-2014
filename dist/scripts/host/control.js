@@ -129,16 +129,56 @@ var TSOS;
         Control.displayPCB = function (pid, ir, priority) {
             var taPCB = document.getElementById("taPCB");
 
-            taPCB.value = "";
-            taPCB.value = "PID: \t\t" + pid;
-            taPCB.value = taPCB.value + "\nPC : \t\t" + _CPU.PC;
-            taPCB.value = taPCB.value + "\nIR : \t\t" + ir;
-            taPCB.value = taPCB.value + "\nACC: \t\t" + _CPU.Acc;
-            taPCB.value = taPCB.value + "\nX  : \t\t" + _CPU.Xreg;
-            taPCB.value = taPCB.value + "\nY  : \t\t" + _CPU.Yreg;
-            taPCB.value = taPCB.value + "\nZ  : \t\t" + _CPU.Zflag;
-            taPCB.value = taPCB.value + "\nPriority: \t" + priority;
-            taPCB.value = taPCB.value + "\nState: \t\t" + _ProcState;
+            // TODO: Update PCB to display multiple processes.
+            taPCB.value = "PID:";
+            for (var x = 0; x < _PCB.pid.length; x++) {
+                taPCB.value = taPCB.value + "\t\t" + _PCB.pid[x];
+            }
+
+            // taPCB.value = "PID: \t\t" + pid;
+            taPCB.value = taPCB.value + "\nPC :";
+            for (var x = 0; x < _PCB.pc.length; x++) {
+                taPCB.value = taPCB.value + "\t\t" + _PCB.pc[x];
+            }
+
+            taPCB.value = taPCB.value + "\nIR :";
+            for (var x = 0; x < _PCB.ir.length; x++) {
+                taPCB.value = taPCB.value + "\t\t" + _PCB.ir[x];
+            }
+
+            taPCB.value = taPCB.value + "\nACC:";
+            for (var x = 0; x < _PCB.acc.length; x++) {
+                taPCB.value = taPCB.value + "\t\t" + _PCB.acc[x];
+            }
+
+            taPCB.value = taPCB.value + "\nX  :";
+            for (var x = 0; x < _PCB.x.length; x++) {
+                taPCB.value = taPCB.value + "\t\t" + _PCB.x[x];
+            }
+
+            taPCB.value = taPCB.value + "\nY  :";
+            for (var x = 0; x < _PCB.y.length; x++) {
+                taPCB.value = taPCB.value + "\t\t" + _PCB.y[x];
+            }
+
+            taPCB.value = taPCB.value + "\nZ  :";
+            for (var x = 0; x < _PCB.z.length; x++) {
+                taPCB.value = taPCB.value + "\t\t" + _PCB.z[x];
+            }
+
+            taPCB.value = taPCB.value + "\nPriority: \t";
+            for (var x = 0; x < _PCB.priority.length; x++) {
+                taPCB.value = taPCB.value + _PCB.priority[x] + "\t\t";
+            }
+
+            taPCB.value = taPCB.value + "\nState:";
+            for (var x = 0; x < _PCB.state.length; x++) {
+                if ((_PCB.state[x] === "terminated") && (x > 0)) {
+                    taPCB.value = taPCB.value + "\t" + _PCB.state[x];
+                } else {
+                    taPCB.value = taPCB.value + "\t\t" + _PCB.state[x];
+                }
+            }
         };
 
         Control.initCPU = function () {

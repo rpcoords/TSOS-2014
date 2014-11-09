@@ -1,6 +1,7 @@
 ///<reference path="shellCommand.ts" />
 ///<reference path="userCommand.ts" />
 ///<reference path="../utils.ts" />
+///<reference path="scheduler.ts" />
 /* ------------
 Shell.ts
 The OS Shell - The "command line interface" (CLI) for the console.
@@ -17,7 +18,6 @@ var TSOS;
             this.apologies = "[sorry]";
         }
         Shell.prototype.init = function () {
-            TSOS.Control.hostLog("began launch", "shell");
             var sc = null;
 
             //
@@ -45,7 +45,6 @@ var TSOS;
             // trace <on | off>
             sc = new TSOS.ShellCommand(this.shellTrace, "trace", "<on | off> - Turns the OS trace on or off.");
             this.commandList[this.commandList.length] = sc;
-            TSOS.Control.hostLog("trace created", "shell");
 
             // rot13 <string>
             sc = new TSOS.ShellCommand(this.shellRot13, "rot13", "<string> - Does rot13 obfuscation on <string>.");
@@ -66,7 +65,6 @@ var TSOS;
             // date
             sc = new TSOS.ShellCommand(this.shellDate, "date", "- Displays the current date and time.");
             this.commandList[this.commandList.length] = sc;
-            TSOS.Control.hostLog("date created", "shell");
 
             // status <string>
             sc = new TSOS.ShellCommand(this.shellStatus, "status", "<string> - Allows user to specify status messages.");
@@ -83,7 +81,6 @@ var TSOS;
             // run <pid>
             sc = new TSOS.ShellCommand(this.shellRun, "run", "<pid> - Runs program for specified pid.");
             this.commandList[this.commandList.length] = sc;
-            TSOS.Control.hostLog("run created", "shell");
 
             // quantum <int>
             sc = new TSOS.ShellCommand(this.shellQuantum, "quantum", "<int> - Allows user to change quantum value.");
@@ -105,11 +102,9 @@ var TSOS;
             // kill <id> - kills the specified process id.
             sc = new TSOS.ShellCommand(this.shellKill, "kill", "<pid> - kills process with specified pid.");
             this.commandList[this.commandList.length] = sc;
-            TSOS.Control.hostLog("kill created", "shell");
 
             // Display the initial prompt.
             this.putPrompt();
-            TSOS.Control.hostLog("prompt created", "shell");
             TSOS.Control.hostLog("shell launched", "shell");
         };
 
@@ -351,6 +346,8 @@ var TSOS;
             var currB = 0;
             var memLocationA = 0;
             var memLocationB = 0;
+            var bytesPassed = 0;
+            var units = 0;
 
             if (_MemoryPointer === 1) {
                 currA = 32;
@@ -387,6 +384,24 @@ var TSOS;
                         memLocationB = 0;
                     }
 
+                    // Record units in _Units
+                    // Determine if instruction is an op code
+                    if (bytesPassed === 0) {
+                        // Increment units
+                        if ((instruction === "EA") || (instruction === "00") || (instruction === "FF")) {
+                            units++;
+                            bytesPassed = 0;
+                        } else if ((instruction === "A9") || (instruction === "A2") || (instruction === "A0")) {
+                            units++;
+                            bytesPassed = 1;
+                        } else if ((instruction === "AD") || (instruction === "8D") || (instruction === "6D") || (instruction === "AE") || (instruction === "AC") || (instruction === "EC") || (instruction === "EE")) {
+                            units++;
+                            bytesPassed = 2;
+                        }
+                    } else {
+                        bytesPassed--;
+                    }
+
                     // Load instruction into visual memory.
                     memory[currA][currB] = instruction;
 
@@ -396,20 +411,6 @@ var TSOS;
                         currA++;
                     }
 
-                    // if instruction is "00", move to next memory partition.
-                    /*	if (instruction === "00") {
-                    _MemoryPointer++;
-                    _StdOut.putText(_MemoryPointer + ":" + currA + "-" + currB);
-                    if (_MemoryPointer === 1) {
-                    currA = 32;
-                    } else if (_MemoryPointer === 2) {
-                    currA = 64;
-                    }
-                    currB = 0;
-                    
-                    memLocationA = 0;
-                    memLocationB = 0;
-                    } */
                     instruction = "";
                 }
             }
@@ -433,6 +434,9 @@ var TSOS;
                 // Display PID in shell.
                 _StdOut.putText("PID: " + _PIDCounter);
                 _PIDCounter++; // Increment _PIDCounter for next program.
+
+                // Add units to _Units.
+                _Units.enqueue(units);
             }
         };
 
@@ -450,24 +454,40 @@ var TSOS;
             }
 
             if (pointer === 3) {
-                _StdOut.putText(pointer + "No such PID.");
+                _StdOut.putText("No such PID.");
             } else {
-                _ProcState = "new";
-                TSOS.Control.displayPCB(args, "0", 1);
+                // Modification for CPU Scheduler
+                // Determine number of time units for process being added.
+                var units = _Units.q[pointer];
+                _Scheduler.addProcess(args, units, id[1]);
 
+                _Actives.push(args);
+
+                // Push to PCB
+                _PCB.setRegisters(args);
+
+                _MemTracker[id[1]] = false;
+                _MemoryPointer = id[1];
+
+                _CPU.isExecuting = true;
+                /*
+                _ProcState = "new";
+                Control.displayPCB(args, "0", 1);
+                
                 _ProcState = "ready";
-                TSOS.Control.displayPCB(id, "0", 1);
+                Control.displayPCB(id, "0", 1);
                 _Actives.push(args);
                 memDivision = id[1];
                 _id = id[0];
                 _col = 0;
                 _row = 0;
-
+                
                 _CPU.isExecuting = true;
-
                 //_CPU.executeProgram(id[1], args);
+                
                 _MemTracker[id[1]] = false;
                 _MemoryPointer = id[1];
+                */
             }
         };
 
@@ -511,6 +531,23 @@ var TSOS;
         };
 
         Shell.prototype.shellRunall = function () {
+            // Add every process to Ready Queue
+            var size = _PIDs.getSize();
+            for (var a = 1; a < size; a++) {
+                var id = _PIDs.dequeue();
+                var units = _Units.dequeue();
+
+                _Scheduler.addProcess(id[0], units, id[1]);
+                _Actives.push(id[0]);
+
+                // Push to PCB
+                _PCB.setRegisters(id[0]);
+
+                _MemTracker[id[1]] = false;
+                _MemoryPointer = id[1];
+            }
+
+            _CPU.isExecuting = true;
         };
 
         Shell.prototype.shellKill = function (args) {

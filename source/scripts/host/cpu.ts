@@ -219,9 +219,14 @@ module TSOS {
 					// Removes id from _Actives
 					_Actives.splice(_Actives.indexOf(_id), 1);
 					
+					// Sets remainingUnits to 0. Allows context switch.
+					_Scheduler.remainingUnits = 0;
+					
 					// Updates PCB
+					_PCB.updateForId(_id, instruction, _CPU.PC, _CPU.Acc, _CPU.Xreg, _CPU.Yreg, _CPU.Zflag, _ProcState);
 					Control.displayPCB(_id, instruction, 1);
 					_ProcState = "terminated";
+					_PCB.updateForId(_id, instruction, _CPU.PC, _CPU.Acc, _CPU.Xreg, _CPU.Yreg, _CPU.Zflag, _ProcState);
 					Control.displayPCB(_id, instruction, 1);
 					this.isExecuting = false;
 				} else if (instruction === "EC") { // Compare byte in memory to X register
@@ -360,6 +365,7 @@ module TSOS {
 				}
 				
 				// Updates PCB
+				_PCB.updateForId(_id, instruction, _CPU.PC, _CPU.Acc, _CPU.Xreg, _CPU.Yreg, _CPU.Zflag, _ProcState);
 				Control.displayPCB(_id, instruction, 1);
 				
 				instruction = _Memory[memDivision][_row][_col]; // Next instruction

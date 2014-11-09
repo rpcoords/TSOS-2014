@@ -35,12 +35,19 @@ var TSOS;
                 }
             }
 
+            // Initialize _Scheduler
+            _Scheduler = new TSOS.Scheduler();
+
+            // Initialize _PCB
+            _PCB = new TSOS.ProcessRegisters();
+
             // Initialize stacks and _ScrollQueue
             _BuffStack = new TSOS.Queue();
             _InverseStack = new TSOS.Queue();
             _StringStack = new TSOS.Queue();
             _ScrollQueue = new TSOS.Queue();
             _PIDs = new TSOS.Queue();
+            _Units = new TSOS.Queue();
 
             // Initialize standard input and output to the _Console.
             _StdIn = _Console;
@@ -99,7 +106,13 @@ var TSOS;
                 var interrupt = _KernelInterruptQueue.dequeue();
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
             } else if (_CPU.isExecuting) {
+                // Implement Round Robin scheduling with _Scheduler.
+                if (_Scheduler.remainingUnits === 0) {
+                    _Scheduler.contextSwitch();
+                }
+
                 _CPU.cycle();
+                _Scheduler.onCycle(); // Decrement remaining time units.
             } else {
                 if (_Crash === false) {
                     this.krnTrace("Idle");

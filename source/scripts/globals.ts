@@ -156,6 +156,7 @@ var _Process = null; // Initialized when program is executed
 //_Process = TSOS.Process;
 var _ProcState = "";
 var _Actives = new Array(); // All PIDs that are active.
+var _PCB: TSOS.ProcessRegisters;
 
 var _MemoryPointer = 0;
 var _MemTracker = new Array(3);
@@ -168,8 +169,8 @@ var _id = 0;
 var _col = 0;
 var _row = 0;
 
-// CPU Scheduler
-//var _Scheduler = TSOS.Scheduler;
+// Units of time per loaded command (not yet run)
+var _Units = null;
 
 // Standard input and output
 var _StdIn  = null;

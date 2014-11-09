@@ -38,6 +38,10 @@ module TSOS {
 				}
 			}
 
+			// Initialize _Scheduler
+			_Scheduler = new Scheduler();
+			// Initialize _PCB
+			_PCB = new ProcessRegisters();
 			
 			// Initialize stacks and _ScrollQueue
 			_BuffStack = new Queue();
@@ -45,6 +49,7 @@ module TSOS {
 			_StringStack = new Queue();
 			_ScrollQueue = new Queue();
 			_PIDs = new Queue();
+			_Units = new Queue();
 
             // Initialize standard input and output to the _Console.
             _StdIn  = _Console;
@@ -103,7 +108,13 @@ module TSOS {
                 var interrupt = _KernelInterruptQueue.dequeue();
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
             } else if (_CPU.isExecuting) { // If there are no interrupts then run one CPU cycle if there is anything being processed. {
-                _CPU.cycle();
+                // Implement Round Robin scheduling with _Scheduler.
+				if (_Scheduler.remainingUnits === 0) {
+					_Scheduler.contextSwitch();
+				}
+				
+				_CPU.cycle();
+				_Scheduler.onCycle(); // Decrement remaining time units.
             } else {                      // If there are no interrupts and there is nothing being executed then just be idle. {
                 if (_Crash === false) {
 					this.krnTrace("Idle");
