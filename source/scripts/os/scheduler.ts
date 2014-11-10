@@ -43,6 +43,7 @@ module TSOS {
 					break;
 				}
 			}
+			//console.log("RQ before units check " + this.readyQueue)
 			if (this.currUnits !== 0) {
 				this.readyQueue.enqueue(this.runningId);
 				this.pidUnits.enqueue(this.currUnits);
@@ -51,11 +52,11 @@ module TSOS {
 				// Update PCB.
 				_PCB.state[i] = "ready";
 			}
-			
+			//console.log("RQ after units check "+this.readyQueue)
 			// Take next process off Ready Queue. Update runningId.
 			this.runningId = this.readyQueue.dequeue();
 			_id = this.runningId;
-			
+			//console.log("RQ after remove "+this.readyQueue)
 			// Take time units value off pidUnits. Update currUnits and remainingUnits.
 			// If currUnits > Quantum, use Quantum for remainingUnits.
 			this.currUnits = this.pidUnits.dequeue();
@@ -68,7 +69,8 @@ module TSOS {
 			memDivision = xy[2];
 			
 			// Update PCB.
-			var index = 0;
+			var index = -1;
+			//console.log(+this.runningId)
 			for (var b = 0; b < _PCB.pid.length; b++) {
 				if (+_PCB.pid[b] === +this.runningId) {
 					index = b;

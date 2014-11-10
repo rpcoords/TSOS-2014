@@ -227,13 +227,15 @@ var TSOS;
                 _Scheduler.remainingUnits = 1;
                 _Scheduler.currUnits = 1;
 
+                //console.log("instruction: " + instruction)
                 // Updates PCB
-                _PCB.updateForId(_id, instruction, _CPU.PC, _CPU.Acc, _CPU.Xreg, _CPU.Yreg, _CPU.Zflag, _ProcState);
-                TSOS.Control.displayPCB(_id, instruction, 1);
+                //_PCB.updateForId(_id, instruction, _CPU.PC, _CPU.Acc, _CPU.Xreg, _CPU.Yreg, _CPU.Zflag, _ProcState);
+                //Control.displayPCB(_id, instruction, 1);
                 _ProcState = "terminated";
                 _PCB.updateForId(_id, instruction, _CPU.PC, _CPU.Acc, _CPU.Xreg, _CPU.Yreg, _CPU.Zflag, _ProcState);
                 TSOS.Control.displayPCB(_id, instruction, 1);
 
+                //console.log("instruction(1): " + instruction)
                 if (_Scheduler.readyQueue.getSize() > 0) {
                 } else {
                     this.isExecuting = false;
@@ -380,6 +382,7 @@ var TSOS;
             _PCB.updateForId(_id, instruction, _CPU.PC, _CPU.Acc, _CPU.Xreg, _CPU.Yreg, _CPU.Zflag, _ProcState);
             TSOS.Control.displayPCB(_id, instruction, 1);
 
+            //console.log("instruction(2): " + instruction)
             instruction = _Memory[memDivision][_row][_col]; // Next instruction
         };
 

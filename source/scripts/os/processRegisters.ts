@@ -39,17 +39,27 @@ module TSOS {
 			var index = -1;
 			for (var b = 0; b < this.pid.length; b++) {
 				if (+this.pid[b] === +id) {
-					index = this.pid[b];
+					index = b;
 				}
 			}
 			
-			this.ir[index] = instruction;
-			this.pc[index] = counter;
-			this.acc[index] = a;
-			this.x[index] = xReg;
-			this.y[index] = yReg;
-			this.z[index] = zFlag;
-			this.state[index] = s;
+			//console.log(s)
+		/*	if(s === "terminated"){
+				this.state[index] = s
+				//console.log("update terminated")
+			}else{ */
+				//console.log("update id: " + instruction)
+				this.ir[index] = instruction;
+				this.pc[index] = counter;
+				this.acc[index] = a;
+				this.x[index] = xReg;
+				this.y[index] = yReg;
+				this.z[index] = zFlag;
+				this.state[index] = s;
+				//console.log("updated: " + this.ir[index])
+				//console.log("id = " + id)
+				//console.log("--------------")
+		//	}
 		}
 	}
 }

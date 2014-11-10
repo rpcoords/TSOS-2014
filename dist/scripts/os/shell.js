@@ -551,8 +551,9 @@ var TSOS;
             _CPU.isExecuting = true;
         };
 
-        Shell.prototype.shellKill = function (args) {
+        Shell.prototype.shellKill = function (args_input) {
             // Check if args is in _Actives.
+            var args = +args_input;
             var inActives = false;
             for (var x = 0; x < _Actives.length; x++) {
                 if (+_Actives[x] === +args) {
@@ -565,6 +566,8 @@ var TSOS;
                 _StdOut.putText("PID " + args + " is not an active process.");
             } else {
                 // Remove from _Actives.
+                console.log("input " + args);
+                console.log("index of " + _Actives.indexOf(args));
                 _Actives.splice(_Actives.indexOf(args), 1);
 
                 for (var b = 0; b < _PCB.pid.length; b++) {
@@ -572,7 +575,9 @@ var TSOS;
                         _PCB.pid.splice(b, 1);
                         _PCB.ir.splice(b, 1);
                         _PCB.pc.splice(b, 1);
+                        console.log(_PCB.acc);
                         _PCB.acc.splice(b, 1);
+                        console.log(_PCB.acc);
                         _PCB.x.splice(b, 1);
                         _PCB.y.splice(b, 1);
                         _PCB.z.splice(b, 1);
@@ -581,7 +586,12 @@ var TSOS;
                         break;
                     }
                 }
-                // TODO: Remove from CPU Scheduler.
+
+                // Remove from CPU Scheduler.
+                _Scheduler.remove(args);
+                console.log("scheduler removed");
+
+                _StdOut.putText("Process " + args + " successfully killed.");
             }
         };
         return Shell;
