@@ -533,7 +533,7 @@ var TSOS;
         Shell.prototype.shellRunall = function () {
             // Add every process to Ready Queue
             var size = _PIDs.getSize();
-            for (var a = 1; a < size; a++) {
+            for (var a = 0; a < size; a++) {
                 var id = _PIDs.dequeue();
                 var units = _Units.dequeue();
 
@@ -542,6 +542,7 @@ var TSOS;
 
                 // Push to PCB
                 _PCB.setRegisters(id[0]);
+                TSOS.Control.displayPCB(id[0], "0", 1);
 
                 _MemTracker[id[1]] = false;
                 _MemoryPointer = id[1];
@@ -551,6 +552,37 @@ var TSOS;
         };
 
         Shell.prototype.shellKill = function (args) {
+            // Check if args is in _Actives.
+            var inActives = false;
+            for (var x = 0; x < _Actives.length; x++) {
+                if (+_Actives[x] === +args) {
+                    inActives = true;
+                    break;
+                }
+            }
+
+            if (inActives === false) {
+                _StdOut.putText("PID " + args + " is not an active process.");
+            } else {
+                // Remove from _Actives.
+                _Actives.splice(_Actives.indexOf(args), 1);
+
+                for (var b = 0; b < _PCB.pid.length; b++) {
+                    if (+_PCB.pid[b] === +args) {
+                        _PCB.pid.splice(b, 1);
+                        _PCB.ir.splice(b, 1);
+                        _PCB.pc.splice(b, 1);
+                        _PCB.acc.splice(b, 1);
+                        _PCB.x.splice(b, 1);
+                        _PCB.y.splice(b, 1);
+                        _PCB.z.splice(b, 1);
+                        _PCB.priority.splice(b, 1);
+                        _PCB.state.splice(b, 1);
+                        break;
+                    }
+                }
+                // TODO: Remove from CPU Scheduler.
+            }
         };
         return Shell;
     })();

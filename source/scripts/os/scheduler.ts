@@ -36,10 +36,20 @@ module TSOS {
 		public contextSwitch() {
 			// Check if process is done executing.
 			// If no, push to end of ready queue.
+			var i = 0;
+			for (var b = 0; b < _PCB.pid.length; b++) {
+				if (+_PCB.pid[b] === +this.runningId) {
+					i = b;
+					break;
+				}
+			}
 			if (this.currUnits !== 0) {
 				this.readyQueue.enqueue(this.runningId);
 				this.pidUnits.enqueue(this.currUnits);
 				this.xyStatus.enqueue([_row, _col, memDivision]);
+				
+				// Update PCB.
+				_PCB.state[i] = "ready";
 			}
 			
 			// Take next process off Ready Queue. Update runningId.
@@ -57,6 +67,23 @@ module TSOS {
 			_col = xy[1];
 			memDivision = xy[2];
 			
+			// Update PCB.
+			var index = 0;
+			for (var b = 0; b < _PCB.pid.length; b++) {
+				if (+_PCB.pid[b] === +this.runningId) {
+					index = b;
+					break;
+				}
+			}
+			_ProcState = "running";
+			
+			// Update CPU Registers.
+			_CPU.PC = _PCB.pc[index];
+			_CPU.Acc = _PCB.acc[index];
+			_CPU.Xreg = _PCB.x[index];
+			_CPU.Yreg = _PCB.y[index];
+			_CPU.Zflag = _PCB.z[index];
+			
 			// Log scheduling event: Context Switch.
 			Control.hostLog("Context Switch", "CPU scheduler");
 		}
@@ -67,6 +94,31 @@ module TSOS {
 			this.currUnits--;
 		}
 		
+		public remove(id: number) {
+			if (+id === +this.runningId) {
+				// prepare for context switch
+				this.currUnits = 0;
+				this.remainingUnits = 0;
+				
+				// context switch
+				this.contextSwitch();
+			} else {
+				for (var b = 0; b < this.readyQueue.getSize(); b++) {
+					if (+id === +this.readyQueue.q[b]) {
+						this.readyQueue.q.splice(b, 1);
+						this.pidUnits.q.splice(b, 1);
+						this.xyStatus.q.splice(b, 1);
+						break;
+					}
+				}
+			}
+			
+			// check whether or not to stop execution
+			if (this.readyQueue.getSize() > 0) {
+			} else {
+				_CPU.isExecuting = false;
+			}
+		}
 	}
 
 }

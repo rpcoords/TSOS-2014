@@ -219,8 +219,9 @@ module TSOS {
 					// Removes id from _Actives
 					_Actives.splice(_Actives.indexOf(_id), 1);
 					
-					// Sets remainingUnits to 0. Allows context switch.
-					_Scheduler.remainingUnits = 0;
+					// Sets remainingUnits and currUnits to 0. Allows proper context switch.
+					_Scheduler.remainingUnits = 1;
+					_Scheduler.currUnits = 1;
 					
 					// Updates PCB
 					_PCB.updateForId(_id, instruction, _CPU.PC, _CPU.Acc, _CPU.Xreg, _CPU.Yreg, _CPU.Zflag, _ProcState);
@@ -228,7 +229,11 @@ module TSOS {
 					_ProcState = "terminated";
 					_PCB.updateForId(_id, instruction, _CPU.PC, _CPU.Acc, _CPU.Xreg, _CPU.Yreg, _CPU.Zflag, _ProcState);
 					Control.displayPCB(_id, instruction, 1);
-					this.isExecuting = false;
+					
+					if (_Scheduler.readyQueue.getSize() > 0) {
+					} else {
+						this.isExecuting = false;
+					}
 				} else if (instruction === "EC") { // Compare byte in memory to X register
 					// Retrieves memory address
 					_col++;
@@ -358,11 +363,13 @@ module TSOS {
 				}
 				
 				// increment col and _row
+			//	if (instruction !== "00") {
 				_col++;
 				if (_col >= 16) {
 					_row++;
 					_col = 0;
 				}
+			//	}
 				
 				// Updates PCB
 				_PCB.updateForId(_id, instruction, _CPU.PC, _CPU.Acc, _CPU.Xreg, _CPU.Yreg, _CPU.Zflag, _ProcState);
