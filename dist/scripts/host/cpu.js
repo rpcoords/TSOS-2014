@@ -42,6 +42,7 @@ var TSOS;
             // TODO: Accumulate CPU usage and profiling statistics here.
             // Do the real work here. Be sure to set this.isExecuting appropriately.
             var instruction = _Memory[memDivision][_row][_col];
+            var invalid = false;
 
             // Determine Instruction
             if (instruction === "A9") {
@@ -367,22 +368,28 @@ var TSOS;
 
                 this.PC = _col + 1;
             } else {
+                _StdOut.putText("Invalid op code " + instruction);
+                _StdOut.advanceLine();
+                _OsShell.shellKill(_id);
+                _StdOut.advanceLine();
+                invalid = true;
+                _Scheduler.remainingUnits++;
             }
 
             // increment col and _row
-            //	if (instruction !== "00") {
-            _col++;
-            if (_col >= 16) {
-                _row++;
-                _col = 0;
+            if (invalid === false) {
+                _col++;
+                if (_col >= 16) {
+                    _row++;
+                    _col = 0;
+                }
             }
 
-            //	}
             // Updates PCB
             _PCB.updateForId(_id, instruction, _CPU.PC, _CPU.Acc, _CPU.Xreg, _CPU.Yreg, _CPU.Zflag, _ProcState);
             TSOS.Control.displayPCB(_id, instruction, 1);
+            console.log("instruction(2): " + instruction + "|" + _col);
 
-            //console.log("instruction(2): " + instruction)
             instruction = _Memory[memDivision][_row][_col]; // Next instruction
         };
 

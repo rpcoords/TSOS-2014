@@ -612,7 +612,7 @@ module TSOS {
 			} else {
 				// Remove from _Actives.
 				console.log("input " + args)
-				console.log("index of " + _Actives.indexOf(args))
+				console.log("index of " + _Actives.indexOf(+args))
 				_Actives.splice(_Actives.indexOf(args), 1);
 				
 				// Remove from PCB.

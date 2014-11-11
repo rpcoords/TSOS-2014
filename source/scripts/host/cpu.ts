@@ -43,6 +43,7 @@ module TSOS {
             // Do the real work here. Be sure to set this.isExecuting appropriately.
 			
 			var instruction = _Memory[memDivision][_row][_col];
+			var invalid = false;
 			
 			// Determine Instruction
 				if (instruction === "A9") { // Load ACC with constant
@@ -360,23 +361,28 @@ module TSOS {
 					}
 					
 					this.PC = _col + 1;
-				} else { // Memory addresses and constants
-				
+				} else { // Invalid op codes.
+					_StdOut.putText("Invalid op code " + instruction);
+					_StdOut.advanceLine();
+					_OsShell.shellKill(_id);
+					_StdOut.advanceLine();
+					invalid = true;
+					_Scheduler.remainingUnits++;
 				}
 				
 				// increment col and _row
-			//	if (instruction !== "00") {
+				if (invalid === false) {
 				_col++;
 				if (_col >= 16) {
 					_row++;
 					_col = 0;
 				}
-			//	}
+				}
 				
 				// Updates PCB
 				_PCB.updateForId(_id, instruction, _CPU.PC, _CPU.Acc, _CPU.Xreg, _CPU.Yreg, _CPU.Zflag, _ProcState);
 				Control.displayPCB(_id, instruction, 1);
-				//console.log("instruction(2): " + instruction)
+				console.log("instruction(2): " + instruction + "|" + _col)
 				
 				instruction = _Memory[memDivision][_row][_col]; // Next instruction
 				

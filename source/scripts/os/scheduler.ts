@@ -64,6 +64,7 @@ module TSOS {
 			
 			// Update memory position using xyStatus.
 			var xy = this.xyStatus.dequeue();
+			console.log(xy)
 			_row = xy[0];
 			_col = xy[1];
 			memDivision = xy[2];
@@ -103,7 +104,9 @@ module TSOS {
 				this.remainingUnits = 0;
 				
 				// context switch
-				this.contextSwitch();
+				if (this.readyQueue.getSize() > 0) {
+					this.contextSwitch();
+				}
 			} else {
 				for (var b = 0; b < this.readyQueue.getSize(); b++) {
 					if (+id === +this.readyQueue.q[b]) {
