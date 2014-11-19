@@ -35,6 +35,16 @@ var TSOS;
                 }
             }
 
+            for (var a = 0; a <= 2; a++) {
+                for (var b = 0; b <= 15; b++) {
+                    for (var c = 0; c <= 15; c++) {
+                        _Memory[a][b][c] = "00";
+                    }
+                }
+            }
+
+            var _MemoryLength = _Memory.length * (_Memory[0][0].length + _Memory[0].length);
+
             // Initialize _Scheduler
             _Scheduler = new TSOS.Scheduler();
 
@@ -147,6 +157,10 @@ var TSOS;
                 case KEYBOARD_IRQ:
                     _krnKeyboardDriver.isr(params); // Kernel mode device driver
                     _StdIn.handleInput();
+                    break;
+                case MEMORY_BOUNDS_IRQ:
+                    this.krnTrace("Memory Out of Bounds exception.");
+                    _OsShell.shellKill(_id);
                     break;
                 default:
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");

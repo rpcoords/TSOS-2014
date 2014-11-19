@@ -9,7 +9,8 @@ module TSOS {
 					public remainingUnits = 0,
 					public pidUnits = new Queue(),
 					public currUnits = 0,
-					public xyStatus = new Queue()) {
+					public xyStatus = new Queue(),
+					public algorithm = "rr") {
 			// _Quantum stored as global variable.
 			/* readyQueue = the Ready Queue
 			 * runningId = PID for Process in execution
@@ -64,7 +65,7 @@ module TSOS {
 			
 			// Update memory position using xyStatus.
 			var xy = this.xyStatus.dequeue();
-			console.log(xy)
+			//console.log(xy)
 			_row = xy[0];
 			_col = xy[1];
 			memDivision = xy[2];
@@ -119,7 +120,7 @@ module TSOS {
 			}
 			
 			// check whether or not to stop execution
-			if (this.readyQueue.getSize() > 0) {
+			if (_Actives.length > 0) {
 			} else {
 				_CPU.isExecuting = false;
 			}
