@@ -58,6 +58,7 @@ var TSOS;
             _ScrollQueue = new TSOS.Queue();
             _PIDs = new TSOS.Queue();
             _Units = new TSOS.Queue();
+            _Priorities = new TSOS.Queue();
 
             // Initialize standard input and output to the _Console.
             _StdIn = _Console;
@@ -116,9 +117,18 @@ var TSOS;
                 var interrupt = _KernelInterruptQueue.dequeue();
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
             } else if (_CPU.isExecuting) {
-                // Implement Round Robin scheduling with _Scheduler.
-                if (_Scheduler.remainingUnits === 0) {
-                    _Scheduler.contextSwitch();
+                // Make context switches sensitive to scheduler algorithm.
+                // Implements Round Robin, First Come, First Served, and Non-Preemptive Priority scheduling with _Scheduler.
+                console.log("id: " + _id);
+                if (_Scheduler.algorithm === "rr") {
+                    if (_Scheduler.remainingUnits === 0) {
+                        _Scheduler.contextSwitch();
+                    }
+                } else {
+                    // if (readyForSwitch = true), execute context switch.
+                    if (_Scheduler.readyForSwitch === true) {
+                        _Scheduler.contextSwitch();
+                    }
                 }
 
                 _CPU.cycle();

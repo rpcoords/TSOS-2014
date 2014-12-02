@@ -238,9 +238,10 @@ var TSOS;
                 // Removes id from _Actives
                 _Actives.splice(_Actives.indexOf(_id), 1);
 
-                // Sets remainingUnits and currUnits to 0. Allows proper context switch.
+                // Sets remainingUnits and currUnits to 0. Sets readyForSwitch to true. Allows proper context switch.
                 _Scheduler.remainingUnits = 1;
                 _Scheduler.currUnits = 1;
+                _Scheduler.readyForSwitch = true;
 
                 //console.log("instruction: " + instruction)
                 // Updates PCB
