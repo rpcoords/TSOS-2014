@@ -1,7 +1,8 @@
 var TSOS;
 (function (TSOS) {
     var Scheduler = (function () {
-        function Scheduler(readyQueue, runningId, remainingUnits, pidUnits, currUnits, xyStatus, priorities, algorithm, readyForSwitch) {
+        function Scheduler(readyQueue, runningId, remainingUnits, pidUnits, currUnits, xyStatus, //<<<<<<< HEAD
+        priorities, algorithm, readyForSwitch) {
             if (typeof readyQueue === "undefined") { readyQueue = new TSOS.Queue(); }
             if (typeof runningId === "undefined") { runningId = 0; }
             if (typeof remainingUnits === "undefined") { remainingUnits = 0; }
@@ -20,6 +21,9 @@ var TSOS;
             this.priorities = priorities;
             this.algorithm = algorithm;
             this.readyForSwitch = readyForSwitch;
+            //=======
+            //					public algorithm = "rr") {
+            //>>>>>>> 8f5be46f6b6a07b6c705d225a142a2841729a641
             // _Quantum stored as global variable.
             /* readyQueue = the Ready Queue
             * runningId = PID for Process in execution

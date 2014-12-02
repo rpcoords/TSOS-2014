@@ -10,9 +10,13 @@ module TSOS {
 					public pidUnits = new Queue(),
 					public currUnits = 0,
 					public xyStatus = new Queue(),
+//<<<<<<< HEAD
 					public priorities = new Array(),
 					public algorithm = "rr",
 					public readyForSwitch = false) {
+//=======
+//					public algorithm = "rr") {
+//>>>>>>> 8f5be46f6b6a07b6c705d225a142a2841729a641
 			// _Quantum stored as global variable.
 			/* readyQueue = the Ready Queue
 			 * runningId = PID for Process in execution

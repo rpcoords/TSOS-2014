@@ -418,12 +418,15 @@ module TSOS {
 			var bytesPassed = 0;
 			var units = 0;
 			var noPartition = false;
+//<<<<<<< HEAD
 			var priority: number = 1;
 			
 			if (args === "") {
 			} else {
 				priority = +args;
 			}
+//=======
+//>>>>>>> 8f5be46f6b6a07b6c705d225a142a2841729a641
 			
 			if (_MemoryPointer === 1) {
 				currA = 32;
