@@ -150,6 +150,36 @@ module TSOS {
 								  "<pid> - kills process with specified pid.");
 			this.commandList[this.commandList.length] = sc;
 			
+			// create <filename>
+			
+			
+			// read <filename>
+			
+			
+			// write <filename> "data"
+			
+			
+			// delete <filename>
+			
+			
+			// format
+			
+			
+			// ls
+			
+			
+			// setschedule [rr, fcfs, priority]
+			sc = new ShellCommand(this.shellSetSchedule,
+								  "setschedule",
+								  "[rr, fcfs, priority] - changes cpu scheduling algorithm.");
+			this.commandList[this.commandList.length] = sc;
+			
+			// getschedule
+			sc = new ShellCommand(this.shellGetSchedule,
+								  "getschedule",
+								  "- returns currently selected cpu scheduling algorithm.");
+			this.commandList[this.commandList.length] = sc;
+			
             // Display the initial prompt.
             this.putPrompt();
 			Control.hostLog("shell launched", "shell");
@@ -387,16 +417,23 @@ module TSOS {
 			var memLocationB = 0;
 			var bytesPassed = 0;
 			var units = 0;
+			var noPartition = false;
 			
 			if (_MemoryPointer === 1) {
 				currA = 32;
 			} else if (_MemoryPointer === 2) {
 				currA = 64;
+			} else if (_MemoryPointer === 3) {
+				noPartition = true;
 			}
 			
 			if (code === "") {
 				_StdOut.putText("No program to load into memory.");
 				invalid = true;
+			} else if (noPartition === true) {
+				_StdOut.putText("Cannot load program into memory. Partitions full.");
+				invalid = true;
+				code = "";
 			}
 			
 			for (var a = 0; a <= code.length - 1; a++) {
@@ -459,9 +496,6 @@ module TSOS {
 			}
 			
 			if (invalid === false) {
-				// Display memory in UI.
-				Control.fillMemory();
-				
 				// Create PID
 				_PIDs.enqueue([_PIDCounter, _MemoryPointer]);
 				
@@ -470,9 +504,14 @@ module TSOS {
 					_MemoryPointer = 0;
 				} else if (_MemTracker[1] === false) {
 					_MemoryPointer = 1;
-				} else {
+				} else if (_MemTracker[2] === false) {
 					_MemoryPointer = 2;
+				} else {
+					_MemoryPointer = 3;
 				}
+				
+				// Display memory in UI.
+				Control.fillMemory();
 				
 				// Display PID in shell.
 				_StdOut.putText("PID: " + _PIDCounter);
@@ -639,6 +678,29 @@ module TSOS {
 				
 				_StdOut.putText("Process " + args + " successfully killed.");
 			}
+		}
+		
+		public shellSetSchedule(args: string) {
+			if (_CPU.isExecuting === true) {
+				_StdOut.putText("Cannot change scheduling algorithm while CPU is executing.");
+			} else {
+				_Scheduler.algorithm = args + "";
+				_StdOut.putText("New Scheduler Algorithm: " + args);
+			}
+		}
+		
+		public shellGetSchedule() {
+			var alg = "";
+			_StdOut.putText(_Scheduler.algorithm); _StdOut.advanceLine();
+			if (_Scheduler.algorithm === "rr") {
+				alg = "Round Robin";
+			} else if (_Scheduler.algorithm === "fcfs") {
+				alg = "First Come, First Served";
+			} else {
+				alg = "Priority";
+			}
+			
+			_StdOut.putText("Scheduling Algorithm: " + alg);
 		}
     }
 }
