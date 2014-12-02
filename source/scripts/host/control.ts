@@ -87,18 +87,20 @@ module TSOS {
 			var taMemory = <HTMLInputElement> document.getElementById("taMemory");
 			// Clear taMemory
 			taMemory.value = "";
-			
 			// Fill taMemory
-			for (var a = 0; a <= 95; a++) {
-				if (a === 32) {
+			for (var division = 0; division < _Memory.length; division++) {
+				for (var row = 0; row < _Memory[0].length; row++) { //arbitrary index chosen to get number of rows
+					var numLabel = row*_Memory[0][0].length
+					var strLabel = numLabel.toString(16)
+					if (row === 0) {
+						strLabel = "0"+strLabel
+					}
+					taMemory.value = taMemory.value + "0x" + division + strLabel + " | ";
+					for (var col = 0; col<_Memory[0][0].length; col++){ //index chosen for same reason
+						taMemory.value = taMemory.value + _Memory[division][row][col] + " ";
+					}
 					taMemory.value = taMemory.value + "\n";
-				} else if (a === 64) {
-					taMemory.value = taMemory.value + "\n";
-				}
-				
-				taMemory.value = taMemory.value + "0x" + memIndex[a] + " | ";
-				for (var b = 0; b <= 7; b++) {
-					taMemory.value = taMemory.value + memory[a][b] + " ";
+					
 				}
 				taMemory.value = taMemory.value + "\n";
 			}

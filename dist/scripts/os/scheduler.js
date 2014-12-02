@@ -1,19 +1,21 @@
 var TSOS;
 (function (TSOS) {
     var Scheduler = (function () {
-        function Scheduler(readyQueue, runningId, remainingUnits, pidUnits, currUnits, xyStatus) {
+        function Scheduler(readyQueue, runningId, remainingUnits, pidUnits, currUnits, xyStatus, algorithm) {
             if (typeof readyQueue === "undefined") { readyQueue = new TSOS.Queue(); }
             if (typeof runningId === "undefined") { runningId = 0; }
             if (typeof remainingUnits === "undefined") { remainingUnits = 0; }
             if (typeof pidUnits === "undefined") { pidUnits = new TSOS.Queue(); }
             if (typeof currUnits === "undefined") { currUnits = 0; }
             if (typeof xyStatus === "undefined") { xyStatus = new TSOS.Queue(); }
+            if (typeof algorithm === "undefined") { algorithm = "rr"; }
             this.readyQueue = readyQueue;
             this.runningId = runningId;
             this.remainingUnits = remainingUnits;
             this.pidUnits = pidUnits;
             this.currUnits = currUnits;
             this.xyStatus = xyStatus;
+            this.algorithm = algorithm;
             // _Quantum stored as global variable.
             /* readyQueue = the Ready Queue
             * runningId = PID for Process in execution
@@ -69,7 +71,8 @@ var TSOS;
 
             // Update memory position using xyStatus.
             var xy = this.xyStatus.dequeue();
-            console.log(xy);
+
+            //console.log(xy)
             _row = xy[0];
             _col = xy[1];
             memDivision = xy[2];
@@ -124,7 +127,7 @@ var TSOS;
             }
 
             // check whether or not to stop execution
-            if (this.readyQueue.getSize() > 0) {
+            if (_Actives.length > 0) {
             } else {
                 _CPU.isExecuting = false;
             }

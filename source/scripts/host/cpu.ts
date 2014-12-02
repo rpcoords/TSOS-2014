@@ -41,7 +41,6 @@ module TSOS {
             _Kernel.krnTrace('CPU cycle');
             // TODO: Accumulate CPU usage and profiling statistics here.
             // Do the real work here. Be sure to set this.isExecuting appropriately.
-			
 			var instruction = _Memory[memDivision][_row][_col];
 			var invalid = false;
 			
@@ -83,10 +82,12 @@ module TSOS {
 				} else if (instruction === "8D") { // Store ACC in memory
 					// Retrieves memory address
 					_col++;
+					//console.log("_row: " + _row + " _col: "+_col)
 					if (_col >= 16) {
 						_row++;
 						_col = 0;
 					}
+					//console.log("_row: " + _row + " _col: "+_col)
 					var addr = _Memory[memDivision][_row][_col];
 					_col++; // increment col to bypass most significant bits.
 						   // they are made irrelevant by 3d array and memDivision.
@@ -99,7 +100,13 @@ module TSOS {
 					var tempRow = this.hexToDec(addr.charAt(0));
 					var tempCol = this.hexToDec(addr.charAt(1));
 					
+					if (addr.length > 2) {
+						console.log("Memory out of bounds.")
+						_KernelInterruptQueue.enqueue(new Interrupt(MEMORY_BOUNDS_IRQ, 0));
+					}
+					
 					// Put ACC in memory. Updates PC.
+					//console.log("tempRow " + tempRow + " " + typeof tempRow + " memD: " + memDivision + " tempCol: " + tempCol + " addr: " + addr)
 					_Memory[memDivision][tempRow][tempCol] = this.Acc;
 					this.PC = _col + 1;
 					
@@ -130,18 +137,22 @@ module TSOS {
 					var tempRow = this.hexToDec(addr.charAt(0));
 					var tempCol = this.hexToDec(addr.charAt(1));
 					
-					var a = _Memory[memDivision][tempRow][tempCol];
+					var a = this.hexToDec(_Memory[memDivision][tempRow][tempCol]);
 					
 					// Retrieve constant from ACC and convert to deimal for addition.
 					var b = this.hexToDec(this.Acc);
 					
 					// Add a and b.
 					var sum = +a + b;
-										
-					// Convert to hex and store in ACC. Updates PC.
-					var c = +(sum % 16);
-					var r = Math.round(+(sum / 16));
 					
+					// Convert to hex and store in ACC. Updates PC.
+					var c1 = (sum % 16);
+					var c = +c1.toString(16);
+					var r1 = Math.floor((sum / 16));
+					var r = +r1.toString(16);
+					//console.log(r + " " + c + "|" + this.decToHex(r) + this.decToHex(c))
+					
+					//this.Acc = sum.toString(16);
 					this.Acc = this.decToHex(r) + this.decToHex(c);
 					this.PC = _col + 1;
 				} else if (instruction === "A2") { // Load X register with constant
@@ -256,8 +267,10 @@ module TSOS {
 					var tempRow = this.hexToDec(addr.charAt(0));
 					var tempCol = this.hexToDec(addr.charAt(1));
 					
+					//console.log("Address: " + addr + " row: " + _row)
+					//console.log("X: " + this.Xreg + " memory: " + _Memory[memDivision][tempRow][tempCol] + " result: " + (this.Xreg === _Memory[memDivision][tempRow][tempCol]))
 					// Compare byte in memory to value in X register
-					if (this.Xreg === _Memory[memDivision][tempRow][tempCol]) {
+					if (+this.Xreg === +_Memory[memDivision][tempRow][tempCol]) {
 						this.Zflag = 1;
 					} else {
 						this.Zflag = 0;
@@ -315,13 +328,16 @@ module TSOS {
 					
 					// Increments value at address. Updates PC.
 					var incrementedC = this.hexToDec(_Memory[memDivision][tempRow][tempCol].charAt(1)) + 1;
-					var incrementedR = _Memory[memDivision][tempRow][tempCol].charAt(0);
+					var incrementedR = this.hexToDec(_Memory[memDivision][tempRow][tempCol].charAt(0));
 					if (incrementedC === 16) {
 						incrementedR++;
 						incrementedC = 0;
 					}
+					//console.log("ir: " + incrementedR + " ic: " + incrementedC)
 					_Memory[memDivision][tempRow][tempCol] = this.decToHex(incrementedR) + this.decToHex(incrementedC);
+					
 					var value = _Memory[memDivision][tempRow][tempCol];
+					//console.log("value: " + value)
 					this.PC = _col + 1;
 					
 					// Update UI.
@@ -382,7 +398,7 @@ module TSOS {
 				// Updates PCB
 				_PCB.updateForId(_id, instruction, _CPU.PC, _CPU.Acc, _CPU.Xreg, _CPU.Yreg, _CPU.Zflag, _ProcState);
 				Control.displayPCB(_id, instruction, 1);
-				console.log("instruction(2): " + instruction + "|" + _col)
+				//console.log("instruction(2): " + instruction + "|" + _col)
 				
 				instruction = _Memory[memDivision][_row][_col]; // Next instruction
 				
@@ -390,21 +406,7 @@ module TSOS {
 		
 		// function used by executeProgram() to convert hex digits to decimal
 		public hexToDec(num) {
-			if (num === "A") {
-				return 10;
-			} else if (num === "B") {
-				return 11;
-			} else if (num === "C") {
-				return 12;
-			} else if (num === "D") {
-				return 13;
-			} else if (num === "E") {
-				return 14;
-			} else if (num === "F") {
-				return 15;
-			} else {
-				return +num;
-			}
+			return parseInt(num,16)
 		}
 		
 		public decToHex(num) {
