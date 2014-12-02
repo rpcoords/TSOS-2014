@@ -1,21 +1,25 @@
 var TSOS;
 (function (TSOS) {
     var Scheduler = (function () {
-        function Scheduler(readyQueue, runningId, remainingUnits, pidUnits, currUnits, xyStatus, algorithm) {
+        function Scheduler(readyQueue, runningId, remainingUnits, pidUnits, currUnits, xyStatus, priorities, algorithm, readyForSwitch) {
             if (typeof readyQueue === "undefined") { readyQueue = new TSOS.Queue(); }
             if (typeof runningId === "undefined") { runningId = 0; }
             if (typeof remainingUnits === "undefined") { remainingUnits = 0; }
             if (typeof pidUnits === "undefined") { pidUnits = new TSOS.Queue(); }
             if (typeof currUnits === "undefined") { currUnits = 0; }
             if (typeof xyStatus === "undefined") { xyStatus = new TSOS.Queue(); }
+            if (typeof priorities === "undefined") { priorities = new Array(); }
             if (typeof algorithm === "undefined") { algorithm = "rr"; }
+            if (typeof readyForSwitch === "undefined") { readyForSwitch = false; }
             this.readyQueue = readyQueue;
             this.runningId = runningId;
             this.remainingUnits = remainingUnits;
             this.pidUnits = pidUnits;
             this.currUnits = currUnits;
             this.xyStatus = xyStatus;
+            this.priorities = priorities;
             this.algorithm = algorithm;
+            this.readyForSwitch = readyForSwitch;
             // _Quantum stored as global variable.
             /* readyQueue = the Ready Queue
             * runningId = PID for Process in execution
@@ -23,10 +27,43 @@ var TSOS;
             * pidUnits = units of time for every process in ready queue (PID in readyQueue[1] has pidUnits[1] units)
             * currUnits = units of time running PID needs to finish execution
             * xyStatus = queue of arrays (similar to pidUnits) that stores col and row values for memory navigation ([_row value, _col value, memDivision value])
+            * algorithm = scheduling algorithm being used by CPU Scheduler
+            * readyForSwitch = tells scheduler to perform context switch when process execution has completed
             */
         }
-        Scheduler.prototype.addProcess = function (pid, units, memD) {
-            this.readyQueue.enqueue(pid); // adds pid to ready queue
+        Scheduler.prototype.addProcess = function (pid, units, memD, priority) {
+            if (this.algorithm === "priority") {
+                // TODO: Place process at correct place in ready queue. Sorted so lower number priorities come first (1 before 5).
+                var currPriority = -1;
+                for (var a = 0; a < this.priorities.length; a++) {
+                    currPriority = this.priorities[a];
+                    if (priority < currPriority) {
+                        // Make subarray of elements including and after a.
+                        // Place priorities in position a.
+                        this.priorities[a] = priority;
+                        // Concat the two arrays.
+                    }
+                    /*currPID = this.readyQueue.dequeue();
+                    currPriority = this.priorities.dequeue();
+                    if (priority < currPriority) {
+                    break;
+                    } else {
+                    this.readyQueue.enqueue(currPID);
+                    this.priorities.enqueue(currPriority);
+                    } */
+                }
+                console.log("priorities: " + this.priorities);
+                /*
+                this.readyQueue.enqueue(pid);
+                this.priorities.enqueue(priority)
+                if (currPID !== -1) {
+                this.readyQueue.enqueue(currPID);
+                }
+                */
+            } else {
+                this.readyQueue.enqueue(pid); // adds pid to ready queue
+            }
+
             this.pidUnits.enqueue(units); // adds units needed to execute program to pidUnits
 
             // Add memory execution start points to xyStatus.
@@ -76,6 +113,9 @@ var TSOS;
             _row = xy[0];
             _col = xy[1];
             memDivision = xy[2];
+
+            // Resets readyForSwitch to default. Prevents constant context switches.
+            this.readyForSwitch = false;
 
             // Update PCB.
             var index = -1;

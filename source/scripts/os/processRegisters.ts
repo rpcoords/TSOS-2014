@@ -22,7 +22,7 @@ module TSOS {
 			*/
 		}
 		
-		public setRegisters(id: number) {
+		public setRegisters(id: number, prior: number) {
 			this.pid.push(id);
 			this.ir.push("0");
 			this.pc.push(0);
@@ -30,7 +30,7 @@ module TSOS {
 			this.x.push(0);
 			this.y.push(0);
 			this.z.push(0);
-			this.priority.push(1);
+			this.priority.push(prior);
 			this.state.push("ready");
 		}
 		

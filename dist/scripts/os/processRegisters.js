@@ -30,7 +30,7 @@ var TSOS;
             var state = s;
             */
         }
-        ProcessRegisters.prototype.setRegisters = function (id) {
+        ProcessRegisters.prototype.setRegisters = function (id, prior) {
             this.pid.push(id);
             this.ir.push("0");
             this.pc.push(0);
@@ -38,7 +38,7 @@ var TSOS;
             this.x.push(0);
             this.y.push(0);
             this.z.push(0);
-            this.priority.push(1);
+            this.priority.push(prior);
             this.state.push("ready");
         };
 

@@ -10,7 +10,9 @@ module TSOS {
 					public pidUnits = new Queue(),
 					public currUnits = 0,
 					public xyStatus = new Queue(),
-					public algorithm = "rr") {
+					public priorities = new Array(),
+					public algorithm = "rr",
+					public readyForSwitch = false) {
 			// _Quantum stored as global variable.
 			/* readyQueue = the Ready Queue
 			 * runningId = PID for Process in execution
@@ -18,13 +20,48 @@ module TSOS {
 			 * pidUnits = units of time for every process in ready queue (PID in readyQueue[1] has pidUnits[1] units)
 			 * currUnits = units of time running PID needs to finish execution
 			 * xyStatus = queue of arrays (similar to pidUnits) that stores col and row values for memory navigation ([_row value, _col value, memDivision value])
+			 * algorithm = scheduling algorithm being used by CPU Scheduler
+			 * readyForSwitch = tells scheduler to perform context switch when process execution has completed
 			 */
 			
 			
 		}
 		
-		public addProcess(pid: number, units: number, memD: number) {
-			this.readyQueue.enqueue(pid); // adds pid to ready queue
+		public addProcess(pid: number, units: number, memD: number, priority: number) {
+			if (this.algorithm === "priority") {
+				// TODO: Place process at correct place in ready queue. Sorted so lower number priorities come first (1 before 5).
+				var currPriority = -1;
+				for (var a = 0; a < this.priorities.length; a++) {
+					currPriority = this.priorities[a];
+					if (priority < currPriority) {
+						// Make subarray of elements including and after a.
+						
+						// Place priorities in position a.
+						this.priorities[a] = priority;
+						
+						// Concat the two arrays.
+					}
+					/*currPID = this.readyQueue.dequeue();
+					currPriority = this.priorities.dequeue();
+					if (priority < currPriority) {
+						break;
+					} else {
+						this.readyQueue.enqueue(currPID);
+						this.priorities.enqueue(currPriority);
+					} */
+				}
+				console.log("priorities: " + this.priorities);
+				/*
+				this.readyQueue.enqueue(pid);
+				this.priorities.enqueue(priority)
+				if (currPID !== -1) {
+					this.readyQueue.enqueue(currPID);
+				}
+				*/
+			} else {
+				this.readyQueue.enqueue(pid); // adds pid to ready queue
+			}
+			
 			this.pidUnits.enqueue(units); // adds units needed to execute program to pidUnits
 			// Add memory execution start points to xyStatus.
 			this.xyStatus.enqueue([0, 0, memD]);
@@ -69,6 +106,9 @@ module TSOS {
 			_row = xy[0];
 			_col = xy[1];
 			memDivision = xy[2];
+			
+			// Resets readyForSwitch to default. Prevents constant context switches.
+			this.readyForSwitch = false;
 			
 			// Update PCB.
 			var index = -1;

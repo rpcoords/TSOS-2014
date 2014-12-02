@@ -75,7 +75,7 @@ var TSOS;
             this.commandList[this.commandList.length] = sc;
 
             // load
-            sc = new TSOS.ShellCommand(this.shellLoad, "load", "- Loads user code into memory.");
+            sc = new TSOS.ShellCommand(this.shellLoad, "load", "<priority> - Loads user code into memory (<priority> is optional. Default value is 1).");
             this.commandList[this.commandList.length] = sc;
 
             // run <pid>
@@ -352,7 +352,7 @@ var TSOS;
             _Kernel.krnTrapError("controlled crash");
         };
 
-        Shell.prototype.shellLoad = function () {
+        Shell.prototype.shellLoad = function (args) {
             var code = TSOS.Control.extractCode();
             var instruction = "";
             var invalid = false;
@@ -363,6 +363,12 @@ var TSOS;
             var bytesPassed = 0;
             var units = 0;
             var noPartition = false;
+            var priority = 1;
+
+            if (args === "") {
+            } else {
+                priority = +args;
+            }
 
             if (_MemoryPointer === 1) {
                 currA = 32;
@@ -440,6 +446,9 @@ var TSOS;
                 // Create PID
                 _PIDs.enqueue([_PIDCounter, _MemoryPointer]);
 
+                // Store Process Priority.
+                _Priorities.enqueue(priority);
+
                 _MemTracker[_MemoryPointer] = true;
                 if (_MemTracker[0] === false) {
                     _MemoryPointer = 0;
@@ -482,35 +491,27 @@ var TSOS;
                 // Modification for CPU Scheduler
                 // Determine number of time units for process being added.
                 var units = _Units.q[pointer];
-                _Scheduler.addProcess(args, units, id[1]);
 
                 _Actives.push(args);
 
                 // Push to PCB
-                _PCB.setRegisters(args);
+                var prior = 1;
+                for (var x = 0; x <= pointer; x++) {
+                    prior = _Priorities.dequeue();
+                    if (x !== pointer) {
+                        _Priorities.enqueue(prior);
+                    }
+                }
+                _PCB.setRegisters(args, prior);
+                _Scheduler.addProcess(args, units, id[1], prior);
 
                 _MemTracker[id[1]] = false;
                 _MemoryPointer = id[1];
 
+                if (_Scheduler.algorithm !== "rr") {
+                    _Scheduler.readyForSwitch = true;
+                }
                 _CPU.isExecuting = true;
-                /*
-                _ProcState = "new";
-                Control.displayPCB(args, "0", 1);
-                
-                _ProcState = "ready";
-                Control.displayPCB(id, "0", 1);
-                _Actives.push(args);
-                memDivision = id[1];
-                _id = id[0];
-                _col = 0;
-                _row = 0;
-                
-                _CPU.isExecuting = true;
-                //_CPU.executeProgram(id[1], args);
-                
-                _MemTracker[id[1]] = false;
-                _MemoryPointer = id[1];
-                */
             }
         };
 
@@ -558,19 +559,23 @@ var TSOS;
             var size = _PIDs.getSize();
             for (var a = 0; a < size; a++) {
                 var id = _PIDs.dequeue();
+                var prior = _Priorities.dequeue();
                 var units = _Units.dequeue();
 
-                _Scheduler.addProcess(id[0], units, id[1]);
+                _Scheduler.addProcess(id[0], units, id[1], prior);
                 _Actives.push(id[0]);
 
                 // Push to PCB
-                _PCB.setRegisters(id[0]);
+                _PCB.setRegisters(id[0], prior);
                 TSOS.Control.displayPCB(id[0], "0", 1);
 
                 _MemTracker[id[1]] = false;
                 _MemoryPointer = id[1];
             }
 
+            if (_Scheduler.algorithm !== "rr") {
+                _Scheduler.readyForSwitch = true;
+            }
             _CPU.isExecuting = true;
         };
 

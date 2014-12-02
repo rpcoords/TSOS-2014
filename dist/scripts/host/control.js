@@ -62,15 +62,15 @@ var TSOS;
             }
 
             var taMemory = document.getElementById("taMemory");
-            for (var a = 0; a <= 95; a++) {
-                if (a === 32) {
+            for (var a = 0; a < 48; a++) {
+                if (a === 16) {
                     taMemory.value = taMemory.value + "\n";
-                } else if (a === 64) {
+                } else if (a === 32) {
                     taMemory.value = taMemory.value + "\n";
                 }
 
                 taMemory.value = taMemory.value + "0x" + memIndex[a] + " | ";
-                for (var b = 0; b <= 7; b++) {
+                for (var b = 0; b <= 15; b++) {
                     memory[a][b] = "00";
                     taMemory.value = taMemory.value + memory[a][b] + " ";
                 }
