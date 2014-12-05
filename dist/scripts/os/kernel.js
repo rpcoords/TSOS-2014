@@ -119,7 +119,6 @@ var TSOS;
             } else if (_CPU.isExecuting) {
                 // Make context switches sensitive to scheduler algorithm.
                 // Implements Round Robin, First Come, First Served, and Non-Preemptive Priority scheduling with _Scheduler.
-                console.log("id: " + _id);
                 if (_Scheduler.algorithm === "rr") {
                     if (_Scheduler.remainingUnits === 0) {
                         _Scheduler.contextSwitch();
@@ -130,6 +129,7 @@ var TSOS;
                         _Scheduler.contextSwitch();
                     }
                 }
+                console.log("id: " + _id);
 
                 _CPU.cycle();
                 _Scheduler.onCycle(); // Decrement remaining time units.

@@ -120,7 +120,6 @@ module TSOS {
             } else if (_CPU.isExecuting) { // If there are no interrupts then run one CPU cycle if there is anything being processed. {
                 // Make context switches sensitive to scheduler algorithm.
 				// Implements Round Robin, First Come, First Served, and Non-Preemptive Priority scheduling with _Scheduler.
-				console.log("id: " + _id)
 				if (_Scheduler.algorithm === "rr") {
 					if (_Scheduler.remainingUnits === 0) {
 						_Scheduler.contextSwitch();
@@ -131,6 +130,7 @@ module TSOS {
 						_Scheduler.contextSwitch();
 					}
 				}
+				console.log("id: " + _id)
 				
 				_CPU.cycle();
 				_Scheduler.onCycle(); // Decrement remaining time units.

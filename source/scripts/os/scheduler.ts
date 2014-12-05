@@ -33,42 +33,39 @@ module TSOS {
 		
 		public addProcess(pid: number, units: number, memD: number, priority: number) {
 			if (this.algorithm === "priority") {
-				// TODO: Place process at correct place in ready queue. Sorted so lower number priorities come first (1 before 5).
+				// Place process at correct place in ready queue. Sorted so lower number priorities come first (1 before 5).
 				var currPriority = -1;
-				for (var a = 0; a < this.priorities.length; a++) {
+				var found = false;
+				if (this.priorities.length > 0) { // Checks if priorities is empty
+				for (var a = 0; a < this.priorities.length; a++) { // Checks every element in priorities
 					currPriority = this.priorities[a];
-					if (priority < currPriority) {
-						// Make subarray of elements including and after a.
-						
-						// Place priorities in position a.
-						this.priorities[a] = priority;
-						
-						// Concat the two arrays.
-					}
-					/*currPID = this.readyQueue.dequeue();
-					currPriority = this.priorities.dequeue();
-					if (priority < currPriority) {
+					if (+priority < +currPriority) { // if given priority less than a priority in queue, add to queue.
+						this.priorities.splice(a, 0, priority);
+						this.readyQueue.q.splice(a, 0, pid);
+						this.pidUnits.q.splice(a, 0, units);
+						this.xyStatus.q.splice(a, 0, [0, 0, memD]);
+						found = true;
 						break;
-					} else {
-						this.readyQueue.enqueue(currPID);
-						this.priorities.enqueue(currPriority);
-					} */
+					}
 				}
-				console.log("priorities: " + this.priorities);
-				/*
-				this.readyQueue.enqueue(pid);
-				this.priorities.enqueue(priority)
-				if (currPID !== -1) {
-					this.readyQueue.enqueue(currPID);
+				if (found === false) { // if priority greater than all elements in queue.
+					this.priorities.push(priority);
+					this.readyQueue.enqueue(pid);
+					this.pidUnits.enqueue(units);
+					this.xyStatus.enqueue([0, 0, memD]);
 				}
-				*/
+				} else { // if first priority added to queue.
+					this.priorities.push(priority);
+					this.readyQueue.enqueue(pid);
+					this.pidUnits.enqueue(units);
+					this.xyStatus.enqueue([0, 0, memD]);
+				}
 			} else {
 				this.readyQueue.enqueue(pid); // adds pid to ready queue
+				this.pidUnits.enqueue(units); // adds units needed to execute program to pidUnits
+				// Add memory execution start points to xyStatus.
+				this.xyStatus.enqueue([0, 0, memD]);
 			}
-			
-			this.pidUnits.enqueue(units); // adds units needed to execute program to pidUnits
-			// Add memory execution start points to xyStatus.
-			this.xyStatus.enqueue([0, 0, memD]);
 			
 			// Log scheduling event: Added process (PID) to Ready Queue.
 			var msg = "Process " + pid + " added to Ready Queue.";
