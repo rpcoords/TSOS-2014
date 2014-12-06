@@ -106,6 +106,7 @@ var _PIDCounter = 0;
 var _PIDs = null; // Initialized in kernel
 var _Process = null; // Initialized when program is executed
 var _Priorities = null; // Priority values loaded in.
+var _MemoryPIDs = null; // All PIDs in Memory
 
 //_Process = TSOS.Process;
 var _ProcState = "";
@@ -156,6 +157,7 @@ var _SarcasticMode: boolean = false;
 
 // Global Device Driver Objects - page 12
 var _krnKeyboardDriver = null;
+var _krnFileSysDriver = null;
 
 var _hardwareClockID: number = null;
 

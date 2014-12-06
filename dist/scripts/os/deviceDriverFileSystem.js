@@ -16,8 +16,42 @@ var TSOS;
     var DeviceDriverFileSystem = (function (_super) {
         __extends(DeviceDriverFileSystem, _super);
         function DeviceDriverFileSystem() {
-            _super.apply(this, arguments);
+            // Overrides the base method pointers.
+            _super.call(this, this.krnFileSysDriverEntry, this.krnFileSysISR);
         }
+        DeviceDriverFileSystem.prototype.krnFileSysDriverEntry = function () {
+            // Initialization routine for this, the kernel-mode Keyboard Device Driver.
+            this.status = "loaded";
+            // More?
+        };
+
+        DeviceDriverFileSystem.prototype.krnFileSysISR = function (funcNum, filename) {
+            if (+funcNum === 1) {
+                this.format();
+            } else if (+funcNum === 2) {
+                this.create(filename);
+                console.log("file created.");
+            }
+        };
+
+        DeviceDriverFileSystem.prototype.format = function () {
+            // Clears session storage.
+            sessionStorage.clear();
+
+            for (var a = 0; a < 4; a++) {
+                for (var b = 0; b < 8; b++) {
+                    for (var c = 0; c < 8; c++) {
+                        var key = a + "" + b + "" + c;
+                        sessionStorage.setItem(key, "0---|------------------------------------------------------------");
+                    }
+                }
+            }
+            // TODO: Store initial division data (keys for directory and data input locations) at key "000".
+        };
+
+        DeviceDriverFileSystem.prototype.create = function (filename) {
+            // TODO: Create file in fsDD.
+        };
         return DeviceDriverFileSystem;
     })(TSOS.DeviceDriver);
     TSOS.DeviceDriverFileSystem = DeviceDriverFileSystem;

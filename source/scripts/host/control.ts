@@ -130,13 +130,13 @@ module TSOS {
 		
 		public static initPCB(): void {
 			var taPCB = <HTMLInputElement> document.getElementById("taPCB");
-			taPCB.value = "PID: \t\t" + "\nPC : \t\t" + "\nIR : \t\t" + "\nACC: \t\t" + "\nX  : \t\t" + "\nY  : \t\t" + "\nZ  : \t\t" + "\nPriority: \t" + "\nState: \t\t";
+			taPCB.value = "PID: \t\t" + "\nPC : \t\t" + "\nIR : \t\t" + "\nACC: \t\t" + "\nX  : \t\t" + "\nY  : \t\t" + "\nZ  : \t\t" + "\nPriority: \t" + "\nState: \t\t" + "\nLocation: \t";
 		}
 		
 		public static displayPCB(pid, ir, priority): void {
 			var taPCB = <HTMLInputElement> document.getElementById("taPCB");
 			
-			// TODO: Update PCB to display multiple processes.
+			// Update PCB to display multiple processes.
 			taPCB.value = "PID:";
 			for (var x = 0; x < _PCB.pid.length; x++) {
 				taPCB.value = taPCB.value + "\t\t" + _PCB.pid[x];
@@ -185,6 +185,11 @@ module TSOS {
 				} else {
 					taPCB.value = taPCB.value + "\t\t" + _PCB.state[x];
 				}
+			}
+			
+			taPCB.value = taPCB.value + "\nLocation: \t";
+			for (var x = 0; x < _PCB.location.length; x++) {
+				taPCB.value = taPCB.value + _PCB.location[x] + "\t\t";
 			}
 		}
 		

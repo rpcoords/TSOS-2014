@@ -59,6 +59,7 @@ var TSOS;
             _PIDs = new TSOS.Queue();
             _Units = new TSOS.Queue();
             _Priorities = new TSOS.Queue();
+            _MemoryPIDs = new TSOS.Queue();
 
             // Initialize standard input and output to the _Console.
             _StdIn = _Console;
@@ -69,6 +70,14 @@ var TSOS;
             _krnKeyboardDriver = new TSOS.DeviceDriverKeyboard(); // Construct it.
             _krnKeyboardDriver.driverEntry(); // Call the driverEntry() initialization routine.
             this.krnTrace(_krnKeyboardDriver.status);
+
+            // Load File System Device Driver
+            this.krnTrace("Loading the file system device driver.");
+            _krnFileSysDriver = new TSOS.DeviceDriverFileSystem();
+            _krnFileSysDriver.driverEntry();
+            this.krnTrace(_krnFileSysDriver.status);
+
+            _krnFileSysDriver.format();
 
             //
             // ... more?

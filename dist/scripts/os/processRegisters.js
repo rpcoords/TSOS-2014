@@ -1,7 +1,7 @@
 var TSOS;
 (function (TSOS) {
     var ProcessRegisters = (function () {
-        function ProcessRegisters(pid, ir, pc, acc, x, y, z, priority, state) {
+        function ProcessRegisters(pid, ir, pc, acc, x, y, z, priority, state, location) {
             if (typeof pid === "undefined") { pid = new Array(); }
             if (typeof ir === "undefined") { ir = new Array(); }
             if (typeof pc === "undefined") { pc = new Array(); }
@@ -11,6 +11,7 @@ var TSOS;
             if (typeof z === "undefined") { z = new Array(); }
             if (typeof priority === "undefined") { priority = new Array(); }
             if (typeof state === "undefined") { state = new Array(); }
+            if (typeof location === "undefined") { location = new Array(); }
             this.pid = pid;
             this.ir = ir;
             this.pc = pc;
@@ -20,6 +21,7 @@ var TSOS;
             this.z = z;
             this.priority = priority;
             this.state = state;
+            this.location = location;
             /*
             var pid = id;
             var ir = instruction;
@@ -30,7 +32,7 @@ var TSOS;
             var state = s;
             */
         }
-        ProcessRegisters.prototype.setRegisters = function (id, prior) {
+        ProcessRegisters.prototype.setRegisters = function (id, prior, loc) {
             this.pid.push(id);
             this.ir.push("0");
             this.pc.push(0);
@@ -40,9 +42,10 @@ var TSOS;
             this.z.push(0);
             this.priority.push(prior);
             this.state.push("ready");
+            this.location.push(loc);
         };
 
-        ProcessRegisters.prototype.updateForId = function (id, instruction, counter, a, xReg, yReg, zFlag, s) {
+        ProcessRegisters.prototype.updateForId = function (id, instruction, counter, a, xReg, yReg, zFlag, s, loc) {
             //var index = this.pid.indexOf(id);
             var index = -1;
             for (var b = 0; b < this.pid.length; b++) {
@@ -64,6 +67,7 @@ var TSOS;
             this.y[index] = yReg;
             this.z[index] = zFlag;
             this.state[index] = s;
+            this.location[index] = loc;
             //console.log("updated: " + this.ir[index])
             //console.log("id = " + id)
             //console.log("--------------")

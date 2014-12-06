@@ -104,10 +104,16 @@ var TSOS;
             this.commandList[this.commandList.length] = sc;
 
             // create <filename>
+            sc = new TSOS.ShellCommand(this.shellCreate, "create", "<filename> - creates file filename.");
+            this.commandList[this.commandList.length] = sc;
+
             // read <filename>
             // write <filename> "data"
             // delete <filename>
             // format
+            sc = new TSOS.ShellCommand(this.shellFormat, "format", "- initializes the file system device driver.");
+            this.commandList[this.commandList.length] = sc;
+
             // ls
             // setschedule [rr, fcfs, priority]
             sc = new TSOS.ShellCommand(this.shellSetSchedule, "setschedule", "[rr, fcfs, priority] - changes cpu scheduling algorithm.");
@@ -456,10 +462,13 @@ var TSOS;
                 _MemTracker[_MemoryPointer] = true;
                 if (_MemTracker[0] === false) {
                     _MemoryPointer = 0;
+                    _MemoryPIDs.enqueue(_PIDCounter);
                 } else if (_MemTracker[1] === false) {
                     _MemoryPointer = 1;
+                    _MemoryPIDs.enqueue(_PIDCounter);
                 } else if (_MemTracker[2] === false) {
                     _MemoryPointer = 2;
+                    _MemoryPIDs.enqueue(_PIDCounter);
                 } else {
                     _MemoryPointer = 3;
                 }
@@ -506,7 +515,18 @@ var TSOS;
                         _Priorities.enqueue(prior);
                     }
                 }
-                _PCB.setRegisters(args, prior);
+
+                // Determine location of process.
+                var loc = "Disk";
+                for (var x = 0; x < _MemoryPIDs.q.length; x++) {
+                    if (+args === +_MemoryPIDs.q[x]) {
+                        loc = "Memory";
+                        _MemoryPIDs.q.splice(x, 1);
+                        break;
+                    }
+                }
+
+                _PCB.setRegisters(args, prior, loc);
                 _Scheduler.addProcess(args, units, id[1], prior);
 
                 _MemTracker[id[1]] = false;
@@ -569,8 +589,18 @@ var TSOS;
                 _Scheduler.addProcess(id[0], units, id[1], prior);
                 _Actives.push(id[0]);
 
+                // Determine if in memory
+                var loc = "Disk";
+                for (var x = 0; x < _MemoryPIDs.q.length; x++) {
+                    if (+id[0] === +_MemoryPIDs.q[x]) {
+                        loc = "Memory";
+                        _MemoryPIDs.q.splice(x, 1);
+                        break;
+                    }
+                }
+
                 // Push to PCB
-                _PCB.setRegisters(id[0], prior);
+                _PCB.setRegisters(id[0], prior, loc);
                 TSOS.Control.displayPCB(id[0], "0", 1);
 
                 _MemTracker[id[1]] = false;
@@ -649,6 +679,14 @@ var TSOS;
             }
 
             _StdOut.putText("Scheduling Algorithm: " + alg);
+        };
+
+        Shell.prototype.shellFormat = function () {
+            _krnFileSysDriver.krnFileSysISR(1, "");
+        };
+
+        Shell.prototype.shellCreate = function (args) {
+            _krnFileSysDriver.krnFileSysISR(2, args);
         };
         return Shell;
     })();

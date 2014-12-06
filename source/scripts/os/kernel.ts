@@ -60,7 +60,8 @@ module TSOS {
 			_PIDs = new Queue();
 			_Units = new Queue();
 			_Priorities = new Queue();
-
+			_MemoryPIDs = new Queue();
+			
             // Initialize standard input and output to the _Console.
             _StdIn  = _Console;
             _StdOut = _Console;
@@ -70,6 +71,14 @@ module TSOS {
             _krnKeyboardDriver = new DeviceDriverKeyboard();     // Construct it.
             _krnKeyboardDriver.driverEntry();                    // Call the driverEntry() initialization routine.
             this.krnTrace(_krnKeyboardDriver.status);
+			
+			// Load File System Device Driver
+			this.krnTrace("Loading the file system device driver.");
+			_krnFileSysDriver = new DeviceDriverFileSystem();
+			_krnFileSysDriver.driverEntry();
+			this.krnTrace(_krnFileSysDriver.status);
+			
+			_krnFileSysDriver.format();
 
             //
             // ... more?

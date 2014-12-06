@@ -103,6 +103,7 @@ var _PIDCounter = 0;
 var _PIDs = null;
 var _Process = null;
 var _Priorities = null;
+var _MemoryPIDs = null;
 
 //_Process = TSOS.Process;
 var _ProcState = "";
@@ -153,6 +154,7 @@ var _SarcasticMode = false;
 
 // Global Device Driver Objects - page 12
 var _krnKeyboardDriver = null;
+var _krnFileSysDriver = null;
 
 var _hardwareClockID = null;
 
