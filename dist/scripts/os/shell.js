@@ -108,8 +108,17 @@ var TSOS;
             this.commandList[this.commandList.length] = sc;
 
             // read <filename>
+            sc = new TSOS.ShellCommand(this.shellRead, "read", "<filename> - displays contents of file filename.");
+            this.commandList[this.commandList.length] = sc;
+
             // write <filename> "data"
+            sc = new TSOS.ShellCommand(this.shellWrite, "write", "<filename> \"data\" - writes data to file filename.");
+            this.commandList[this.commandList.length] = sc;
+
             // delete <filename>
+            sc = new TSOS.ShellCommand(this.shellDelete, "delete", "<filename> - remove file filename from storage.");
+            this.commandList[this.commandList.length] = sc;
+
             // format
             sc = new TSOS.ShellCommand(this.shellFormat, "format", "- initializes the file system device driver.");
             this.commandList[this.commandList.length] = sc;
@@ -682,11 +691,40 @@ var TSOS;
         };
 
         Shell.prototype.shellFormat = function () {
-            _krnFileSysDriver.krnFileSysISR(1, "");
+            _krnFileSysDriver.krnFileSysISR(1, "", "");
         };
 
         Shell.prototype.shellCreate = function (args) {
-            _krnFileSysDriver.krnFileSysISR(2, args);
+            var ar = args + "";
+
+            if (ar.length > 30) {
+                _StdOut.putText("Filename has too many characters.");
+            } else {
+                _krnFileSysDriver.krnFileSysISR(2, ar, "");
+            }
+        };
+
+        Shell.prototype.shellWrite = function (args) {
+            var filename = args[0];
+            var data = args[1];
+
+            if ((data.charAt(0) === "\"") && (data.charAt(data.length - 1) === "\"")) {
+                data = data.substring(1, data.length - 1);
+                _krnFileSysDriver.krnFileSysISR(3, filename, data);
+            } else {
+                _StdOut.putText("Data must be surrounded by quotes.");
+            }
+        };
+
+        Shell.prototype.shellRead = function (args) {
+            var ar = args + "";
+
+            _krnFileSysDriver.krnFileSysISR(4, ar, "");
+        };
+
+        Shell.prototype.shellDelete = function (args) {
+            var ar = args + "";
+            _krnFileSysDriver.krnFileSysISR(5, ar, "");
         };
         return Shell;
     })();

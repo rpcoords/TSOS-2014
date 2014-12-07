@@ -157,13 +157,22 @@ module TSOS {
 			this.commandList[this.commandList.length] = sc;
 			
 			// read <filename>
-			
+			sc = new ShellCommand(this.shellRead,
+								  "read",
+								  "<filename> - displays contents of file filename.");
+			this.commandList[this.commandList.length] = sc;
 			
 			// write <filename> "data"
-			
+			sc = new ShellCommand(this.shellWrite,
+								  "write",
+								  "<filename> \"data\" - writes data to file filename.");
+			this.commandList[this.commandList.length] = sc;
 			
 			// delete <filename>
-			
+			sc = new ShellCommand(this.shellDelete,
+								  "delete",
+								  "<filename> - remove file filename from storage.");
+			this.commandList[this.commandList.length] = sc;
 			
 			// format
 			sc = new ShellCommand(this.shellFormat,
@@ -742,11 +751,40 @@ module TSOS {
 		}
 		
 		public shellFormat() {
-			_krnFileSysDriver.krnFileSysISR(1, "");
+			_krnFileSysDriver.krnFileSysISR(1, "", "");
 		}
 		
-		public shellCreate(args) {
-			_krnFileSysDriver.krnFileSysISR(2, args);
+		public shellCreate(args: string) {
+			var ar = args + "";
+			
+			if (ar.length > 30) {
+				_StdOut.putText("Filename has too many characters.");
+			} else {
+				_krnFileSysDriver.krnFileSysISR(2, ar, "");
+			}
+		}
+		
+		public shellWrite(args) {
+			var filename = args[0];
+			var data = args[1];
+			
+			if ((data.charAt(0) === "\"") && (data.charAt(data.length - 1) === "\"")) {
+				data = data.substring(1, data.length - 1);
+				_krnFileSysDriver.krnFileSysISR(3, filename, data);
+			} else {
+				_StdOut.putText("Data must be surrounded by quotes.");
+			}
+		}
+		
+		public shellRead(args: string) {
+			var ar = args + "";
+			
+			_krnFileSysDriver.krnFileSysISR(4, ar, "");
+		}
+		
+		public shellDelete(args: string) {
+			var ar = args + "";
+			_krnFileSysDriver.krnFileSysISR(5, ar, "");
 		}
     }
 }
