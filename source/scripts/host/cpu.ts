@@ -379,6 +379,7 @@ module TSOS {
 					
 					this.PC = _col + 1;
 				} else { // Invalid op codes.
+					_StdOut.advanceLine();
 					_StdOut.putText("Invalid op code " + instruction);
 					_StdOut.advanceLine();
 					_OsShell.shellKill(_id);

@@ -124,6 +124,9 @@ var TSOS;
             this.commandList[this.commandList.length] = sc;
 
             // ls
+            sc = new TSOS.ShellCommand(this.shellLs, "ls", "- lists all files stored on disk.");
+            this.commandList[this.commandList.length] = sc;
+
             // setschedule [rr, fcfs, priority]
             sc = new TSOS.ShellCommand(this.shellSetSchedule, "setschedule", "[rr, fcfs, priority] - changes cpu scheduling algorithm.");
             this.commandList[this.commandList.length] = sc;
@@ -378,11 +381,12 @@ var TSOS;
             var bytesPassed = 0;
             var units = 0;
             var noPartition = false;
+            var program = "";
 
             //<<<<<<< HEAD
             var priority = 1;
 
-            if (args === "") {
+            if (+args.length === 0) {
             } else {
                 priority = +args;
             }
@@ -401,9 +405,9 @@ var TSOS;
                 _StdOut.putText("No program to load into memory.");
                 invalid = true;
             } else if (noPartition === true) {
-                _StdOut.putText("Cannot load program into memory. Partitions full.");
-                invalid = true;
-                code = "";
+                //_StdOut.putText("Cannot load program into memory. Partitions full.");
+                //invalid = true;
+                //code = "";
             }
 
             for (var a = 0; a <= code.length - 1; a++) {
@@ -423,11 +427,16 @@ var TSOS;
 
                 if (instruction.length === 2) {
                     // Push instruction into memory.
-                    _Memory[_MemoryPointer][memLocationA][memLocationB] = instruction;
-                    memLocationB++;
-                    if (memLocationB === 16) {
-                        memLocationA++;
-                        memLocationB = 0;
+                    if (noPartition === false) {
+                        _Memory[_MemoryPointer][memLocationA][memLocationB] = instruction;
+                        memLocationB++;
+                        if (memLocationB === 16) {
+                            memLocationA++;
+                            memLocationB = 0;
+                        }
+                    } else {
+                        console.log("program updated");
+                        program = program + instruction;
                     }
 
                     // Record units in _Units
@@ -482,8 +491,18 @@ var TSOS;
                     _MemoryPointer = 3;
                 }
 
-                // Display memory in UI.
-                TSOS.Control.fillMemory();
+                if (noPartition === false) {
+                    TSOS.Control.fillMemory();
+                } else {
+                    var name = "*p" + _PIDCounter;
+                    _krnFileSysDriver.krnFileSysISR(2, name, "");
+
+                    for (var a = program.length; a < 512; a++) {
+                        program = program + "0";
+                    }
+                    console.log(program);
+                    _krnFileSysDriver.krnFileSysISR(3, name, program);
+                }
 
                 // Display PID in shell.
                 _StdOut.putText("PID: " + _PIDCounter);
@@ -588,6 +607,10 @@ var TSOS;
         };
 
         Shell.prototype.shellRunall = function () {
+            if (_CPU.isExecuting === false) {
+                _CurrDivision = 2;
+            }
+
             // Add every process to Ready Queue
             var size = _PIDs.getSize();
             for (var a = 0; a < size; a++) {
@@ -691,7 +714,7 @@ var TSOS;
         };
 
         Shell.prototype.shellFormat = function () {
-            _krnFileSysDriver.krnFileSysISR(1, "", "");
+            _krnFileSysDriver.krnFileSysISR(1, "", "", true);
         };
 
         Shell.prototype.shellCreate = function (args) {
@@ -700,7 +723,7 @@ var TSOS;
             if (ar.length > 30) {
                 _StdOut.putText("Filename has too many characters.");
             } else {
-                _krnFileSysDriver.krnFileSysISR(2, ar, "");
+                _krnFileSysDriver.krnFileSysISR(2, ar, "", true);
             }
         };
 
@@ -710,7 +733,7 @@ var TSOS;
 
             if ((data.charAt(0) === "\"") && (data.charAt(data.length - 1) === "\"")) {
                 data = data.substring(1, data.length - 1);
-                _krnFileSysDriver.krnFileSysISR(3, filename, data);
+                _krnFileSysDriver.krnFileSysISR(3, filename, data, true);
             } else {
                 _StdOut.putText("Data must be surrounded by quotes.");
             }
@@ -719,12 +742,16 @@ var TSOS;
         Shell.prototype.shellRead = function (args) {
             var ar = args + "";
 
-            _krnFileSysDriver.krnFileSysISR(4, ar, "");
+            _krnFileSysDriver.krnFileSysISR(4, ar, "", true);
         };
 
         Shell.prototype.shellDelete = function (args) {
             var ar = args + "";
-            _krnFileSysDriver.krnFileSysISR(5, ar, "");
+            _krnFileSysDriver.krnFileSysISR(5, ar, "", true);
+        };
+
+        Shell.prototype.shellLs = function () {
+            _krnFileSysDriver.krnFileSysISR(6, "", "", true);
         };
         return Shell;
     })();

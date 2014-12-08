@@ -111,11 +111,13 @@ var TSOS;
 
             // Update memory position using xyStatus.
             var xy = this.xyStatus.dequeue();
-
-            //console.log(xy)
+            console.log("Context switch xy: " + xy);
             _row = xy[0];
             _col = xy[1];
             memDivision = xy[2];
+            if (memDivision > 2) {
+                this.swap(_id, memDivision);
+            }
 
             // Resets readyForSwitch to default. Prevents constant context switches.
             this.readyForSwitch = false;
@@ -173,6 +175,69 @@ var TSOS;
             if (_Actives.length > 0) {
             } else {
                 _CPU.isExecuting = false;
+            }
+        };
+
+        Scheduler.prototype.swap = function (id, memD) {
+            memDivision = _CurrDivision;
+            _CurrDivision--;
+            if (_CurrDivision < 0) {
+                _CurrDivision = 2;
+            }
+
+            // Get variables of most recently executed process.
+            var md = 2;
+            var pid = 2;
+            if (this.readyQueue.getSize() > 0) {
+                var xy = this.xyStatus.q[this.xyStatus.getSize() - 1];
+                md = xy[2];
+                xy[2] = memD;
+                this.xyStatus.q[this.xyStatus.getSize() - 1] = xy;
+                pid = this.readyQueue.q[this.readyQueue.getSize() - 1];
+            }
+
+            // Take process out of storage.
+            var filename = "*p" + id;
+            var prog = _krnFileSysDriver.output(filename);
+            _krnFileSysDriver.krnFileSysISR(5, filename, ""); // delete file in storage
+
+            // Place last process in storage.
+            if (this.readyQueue.getSize() > 0) {
+                var name = "*p" + pid;
+                var data = "";
+
+                for (var a = 0; a < 16; a++) {
+                    for (var b = 0; b < 16; b++) {
+                        data = data + _Memory[md][a][b];
+                    }
+                }
+
+                // Create and write file in storage.
+                _krnFileSysDriver.krnFileSysISR(2, name, "");
+                _krnFileSysDriver.krnFileSysISR(3, name, data);
+            }
+
+            // Place current process in memory.
+            var program = "";
+            var loc = 0;
+
+            for (var a = 0; a < 256; a++) {
+                loc = a * 2;
+                var num = prog.substr(loc, 2);
+
+                //console.log(num);
+                program = program + num;
+            }
+            var instruction = "";
+            for (var a = 0; a < 16; a++) {
+                for (var b = 0; b < 16; b++) {
+                    instruction = program.substr(0, 2);
+                    if (program.length > 2) {
+                        program = program.slice(2, program.length);
+                    }
+                    _Memory[memDivision][a][b] = instruction;
+                    console.log(_Memory[memDivision][a][b]);
+                }
             }
         };
         return Scheduler;

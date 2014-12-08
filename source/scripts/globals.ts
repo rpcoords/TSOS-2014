@@ -127,6 +127,10 @@ var _row = 0;
 // Units of time per loaded command (not yet run)
 var _Units = null;
 
+// Number of files in memory.
+var _Files = 0;
+var _CurrDivision;
+
 // Standard input and output
 var _StdIn  = null;
 var _StdOut = null;

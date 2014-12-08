@@ -390,6 +390,7 @@ var TSOS;
 
                 this.PC = _col + 1;
             } else {
+                _StdOut.advanceLine();
                 _StdOut.putText("Invalid op code " + instruction);
                 _StdOut.advanceLine();
                 _OsShell.shellKill(_id);

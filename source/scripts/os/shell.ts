@@ -181,7 +181,10 @@ module TSOS {
 			this.commandList[this.commandList.length] = sc;
 			
 			// ls
-			
+			sc = new ShellCommand(this.shellLs,
+								  "ls",
+								  "- lists all files stored on disk.");
+			this.commandList[this.commandList.length] = sc;
 			
 			// setschedule [rr, fcfs, priority]
 			sc = new ShellCommand(this.shellSetSchedule,
@@ -422,7 +425,7 @@ module TSOS {
 			_Kernel.krnTrapError("controlled crash");
 		}
 		
-		public shellLoad(args) {
+		public shellLoad(args: string) {
 			var code = Control.extractCode();
 			var instruction = "";
 			var invalid = false;
@@ -433,10 +436,11 @@ module TSOS {
 			var bytesPassed = 0;
 			var units = 0;
 			var noPartition = false;
+			var program = "";
 //<<<<<<< HEAD
 			var priority: number = 1;
 			
-			if (args === "") {
+			if (+args.length === 0) {
 			} else {
 				priority = +args;
 			}
@@ -455,9 +459,9 @@ module TSOS {
 				_StdOut.putText("No program to load into memory.");
 				invalid = true;
 			} else if (noPartition === true) {
-				_StdOut.putText("Cannot load program into memory. Partitions full.");
-				invalid = true;
-				code = "";
+				//_StdOut.putText("Cannot load program into memory. Partitions full.");
+				//invalid = true;
+				//code = "";
 			}
 			
 			for (var a = 0; a <= code.length - 1; a++) {
@@ -479,11 +483,16 @@ module TSOS {
 				
 				if (instruction.length === 2) {
 					// Push instruction into memory.
-					_Memory[_MemoryPointer][memLocationA][memLocationB] = instruction;
-					memLocationB++;
-					if (memLocationB === 16) {
-						memLocationA++;
-						memLocationB = 0;
+					if (noPartition === false) {
+						_Memory[_MemoryPointer][memLocationA][memLocationB] = instruction;
+						memLocationB++;
+						if (memLocationB === 16) {
+							memLocationA++;
+							memLocationB = 0;
+						}
+					} else {
+						console.log("program updated");
+						program = program + instruction;
 					}
 					
 					// Record units in _Units
@@ -540,8 +549,18 @@ module TSOS {
 					_MemoryPointer = 3;
 				}
 				
-				// Display memory in UI.
-				Control.fillMemory();
+				if (noPartition === false) { // Display memory in UI.
+					Control.fillMemory();
+				} else { // Store program in storage
+					var name = "*p" + _PIDCounter;
+					_krnFileSysDriver.krnFileSysISR(2, name, "");
+					
+					for (var a = program.length; a < 512; a++) {
+						program = program + "0";
+					}
+					console.log(program);
+					_krnFileSysDriver.krnFileSysISR(3, name, program);
+				}
 				
 				// Display PID in shell.
 				_StdOut.putText("PID: " + _PIDCounter);
@@ -648,6 +667,10 @@ module TSOS {
 		}
 		
 		public shellRunall() {
+			if (_CPU.isExecuting === false) {
+				_CurrDivision = 2;
+			}
+			
 			// Add every process to Ready Queue
 			var size = _PIDs.getSize();
 			for (var a = 0; a < size; a++) {
@@ -751,7 +774,7 @@ module TSOS {
 		}
 		
 		public shellFormat() {
-			_krnFileSysDriver.krnFileSysISR(1, "", "");
+			_krnFileSysDriver.krnFileSysISR(1, "", "", true);
 		}
 		
 		public shellCreate(args: string) {
@@ -760,7 +783,7 @@ module TSOS {
 			if (ar.length > 30) {
 				_StdOut.putText("Filename has too many characters.");
 			} else {
-				_krnFileSysDriver.krnFileSysISR(2, ar, "");
+				_krnFileSysDriver.krnFileSysISR(2, ar, "", true);
 			}
 		}
 		
@@ -770,7 +793,7 @@ module TSOS {
 			
 			if ((data.charAt(0) === "\"") && (data.charAt(data.length - 1) === "\"")) {
 				data = data.substring(1, data.length - 1);
-				_krnFileSysDriver.krnFileSysISR(3, filename, data);
+				_krnFileSysDriver.krnFileSysISR(3, filename, data, true);
 			} else {
 				_StdOut.putText("Data must be surrounded by quotes.");
 			}
@@ -779,12 +802,16 @@ module TSOS {
 		public shellRead(args: string) {
 			var ar = args + "";
 			
-			_krnFileSysDriver.krnFileSysISR(4, ar, "");
+			_krnFileSysDriver.krnFileSysISR(4, ar, "", true);
 		}
 		
 		public shellDelete(args: string) {
 			var ar = args + "";
-			_krnFileSysDriver.krnFileSysISR(5, ar, "");
+			_krnFileSysDriver.krnFileSysISR(5, ar, "", true);
+		}
+		
+		public shellLs() {
+			_krnFileSysDriver.krnFileSysISR(6, "", "", true);
 		}
     }
 }
