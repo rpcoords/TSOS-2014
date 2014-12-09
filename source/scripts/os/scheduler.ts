@@ -109,6 +109,7 @@ module TSOS {
 			memDivision = xy[2];
 			if (memDivision > 2) {
 				this.swap(_id, memDivision);
+				_PCB.updateLocation(_id, "Memory");
 			}
 			
 			// Resets readyForSwitch to default. Prevents constant context switches.
@@ -186,6 +187,8 @@ module TSOS {
 				xy[2] = memD;
 				this.xyStatus.q[this.xyStatus.getSize() - 1] = xy;
 				pid = this.readyQueue.q[this.readyQueue.getSize() - 1];
+				
+				_PCB.updateLocation(pid, "Disk");
 			}
 			
 			// Take process out of storage.

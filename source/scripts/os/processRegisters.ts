@@ -36,7 +36,7 @@ module TSOS {
 			this.location.push(loc);
 		}
 		
-		public updateForId(id: number, instruction: string, counter: number, a: string, xReg: number, yReg: number, zFlag: number, s: string, loc: string) {
+		public updateForId(id: number, instruction: string, counter: number, a: string, xReg: number, yReg: number, zFlag: number, s: string) {
 			//var index = this.pid.indexOf(id);
 			var index = -1;
 			for (var b = 0; b < this.pid.length; b++) {
@@ -58,11 +58,21 @@ module TSOS {
 				this.y[index] = yReg;
 				this.z[index] = zFlag;
 				this.state[index] = s;
-				this.location[index] = loc;
 				//console.log("updated: " + this.ir[index])
 				//console.log("id = " + id)
 				//console.log("--------------")
 		//	}
+		}
+		
+		public updateLocation(id: number, loc: string) {
+			var index = -1;
+			for (var b = 0; b < this.pid.length; b++) {
+				if (+this.pid[b] === +id) {
+					index = b;
+				}
+			}
+			
+			this.location[index] = loc;
 		}
 	}
 }

@@ -45,7 +45,7 @@ var TSOS;
             this.location.push(loc);
         };
 
-        ProcessRegisters.prototype.updateForId = function (id, instruction, counter, a, xReg, yReg, zFlag, s, loc) {
+        ProcessRegisters.prototype.updateForId = function (id, instruction, counter, a, xReg, yReg, zFlag, s) {
             //var index = this.pid.indexOf(id);
             var index = -1;
             for (var b = 0; b < this.pid.length; b++) {
@@ -67,11 +67,21 @@ var TSOS;
             this.y[index] = yReg;
             this.z[index] = zFlag;
             this.state[index] = s;
-            this.location[index] = loc;
             //console.log("updated: " + this.ir[index])
             //console.log("id = " + id)
             //console.log("--------------")
             //	}
+        };
+
+        ProcessRegisters.prototype.updateLocation = function (id, loc) {
+            var index = -1;
+            for (var b = 0; b < this.pid.length; b++) {
+                if (+this.pid[b] === +id) {
+                    index = b;
+                }
+            }
+
+            this.location[index] = loc;
         };
         return ProcessRegisters;
     })();

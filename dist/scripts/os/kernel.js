@@ -144,6 +144,7 @@ var TSOS;
                 _Scheduler.onCycle(); // Decrement remaining time units.
             } else {
                 if (_Crash === false) {
+                    TSOS.Control.displayFSDD();
                     this.krnTrace("Idle");
                 }
             }

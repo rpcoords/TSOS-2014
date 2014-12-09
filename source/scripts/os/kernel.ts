@@ -119,7 +119,7 @@ module TSOS {
                This is NOT the same as a TIMER, which causes an interrupt and is handled like other interrupts.
                This, on the other hand, is the clock pulse from the hardware (or host) that tells the kernel
                that it has to look for interrupts and process them if it finds any.                           */
-
+			
             // Check for an interrupt, are any. Page 560
             if (_KernelInterruptQueue.getSize() > 0) {
                 // Process the first interrupt on the interrupt queue.
@@ -145,6 +145,7 @@ module TSOS {
 				_Scheduler.onCycle(); // Decrement remaining time units.
             } else {                      // If there are no interrupts and there is nothing being executed then just be idle. {
                 if (_Crash === false) {
+					Control.displayFSDD();
 					this.krnTrace("Idle");
 				}
             }

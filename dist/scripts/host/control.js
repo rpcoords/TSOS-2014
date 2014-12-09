@@ -45,6 +45,9 @@ var TSOS;
             // Display CPU
             this.initCPU();
 
+            // Display FSDD
+            this.displayFSDD();
+
             // Set focus on the start button.
             // Use the TypeScript cast to HTMLInputElement
             document.getElementById("btnStartOS").focus();
@@ -196,6 +199,25 @@ var TSOS;
         Control.displayCPU = function () {
             var taCPU = document.getElementById("taCPU");
             taCPU.value = "PC : \t" + _CPU.PC + "\nACC: \t" + _CPU.Acc + "\nX  : \t" + _CPU.Xreg + "\nY  : \t" + _CPU.Yreg + "\nZ  : \t" + _CPU.Zflag;
+        };
+
+        Control.displayFSDD = function () {
+            var taFSDD = document.getElementById("taFSDD");
+            taFSDD.value = "";
+            var key = "";
+            for (var x = 0; x < 4; x++) {
+                for (var y = 0; y < 8; y++) {
+                    for (var z = 0; z < 8; z++) {
+                        key = x + "" + y + "" + z;
+                        if (key !== "000") {
+                            taFSDD.value = taFSDD.value + key + " " + localStorage.getItem(key) + "\n";
+                        }
+                    }
+                }
+                if (x === 0) {
+                    taFSDD.value = taFSDD.value + "\n";
+                }
+            }
         };
 
         Control.hostLog = function (msg, source) {

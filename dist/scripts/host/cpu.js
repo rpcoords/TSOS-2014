@@ -248,7 +248,7 @@ var TSOS;
                 //_PCB.updateForId(_id, instruction, _CPU.PC, _CPU.Acc, _CPU.Xreg, _CPU.Yreg, _CPU.Zflag, _ProcState);
                 //Control.displayPCB(_id, instruction, 1);
                 _ProcState = "terminated";
-                _PCB.updateForId(_id, instruction, _CPU.PC, _CPU.Acc, _CPU.Xreg, _CPU.Yreg, _CPU.Zflag, _ProcState, "Memory");
+                _PCB.updateForId(_id, instruction, _CPU.PC, _CPU.Acc, _CPU.Xreg, _CPU.Yreg, _CPU.Zflag, _ProcState);
                 TSOS.Control.displayPCB(_id, instruction, 1);
 
                 //console.log("instruction(1): " + instruction)
@@ -409,7 +409,7 @@ var TSOS;
             }
 
             // Updates PCB
-            _PCB.updateForId(_id, instruction, _CPU.PC, _CPU.Acc, _CPU.Xreg, _CPU.Yreg, _CPU.Zflag, _ProcState, "Memory");
+            _PCB.updateForId(_id, instruction, _CPU.PC, _CPU.Acc, _CPU.Xreg, _CPU.Yreg, _CPU.Zflag, _ProcState);
             TSOS.Control.displayPCB(_id, instruction, 1);
 
             //console.log("instruction(2): " + instruction + "|" + _col)
